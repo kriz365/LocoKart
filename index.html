@@ -1,0 +1,3168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LocoKart - Hyperlocal Mobile Application</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-light: #ecfdf5;
+      --primary-dark: #047857;
+      --primary-accent: #10b981;
+      --merchant: #2563eb;
+      --merchant-light: #eff6ff;
+      --merchant-dark: #1d4ed8;
+      --rider: #ea580c;
+      --rider-light: #fff7ed;
+      --rider-dark: #c2410c;
+      --dark: #0f172a;
+      --slate: #1e293b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --radius-xl: 30px;
+      --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
+      --shadow-md: 0 6px 18px rgba(0,0,0,0.07);
+      --shadow-lg: 0 16px 36px rgba(0,0,0,0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    input, textarea, select, button {
+      font-family: inherit;
+    }
+
+    input, textarea {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      pointer-events: auto !important;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #090d16;
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(5, 150, 105, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 90% 85%, rgba(37, 99, 235, 0.18) 0%, transparent 45%),
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 10px;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Broad Mobile Phone Viewport Frame - Presented on Laptop */
+    .mobile-frame {
+      width: 480px;
+      max-width: 98vw;
+      height: min(890px, 96vh);
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 
+        0 0 0 12px #1e293b,
+        0 0 0 15px rgba(255, 255, 255, 0.15),
+        0 30px 80px rgba(0, 0, 0, 0.8);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 3px solid #0f172a;
+    }
+
+    /* Phone Status Bar & Dynamic Island */
+    .phone-top-bar {
+      height: 40px;
+      padding: 10px 24px 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      z-index: 60;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .dynamic-island {
+      width: 110px;
+      height: 24px;
+      background: #000000;
+      border-radius: 18px;
+      position: absolute;
+      left: calc(50% - 55px);
+      top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      z-index: 70;
+    }
+
+    .island-dot { width: 8px; height: 8px; background: #111827; border-radius: 50%; }
+    .island-lens { width: 9px; height: 9px; background: #064e3b; border-radius: 50%; border: 1.5px solid #10b981; }
+    .status-network { display: flex; gap: 5px; align-items: center; font-size: 11px; font-weight: 800; }
+
+    /* ========================================================
+       IN-APP ROLE SWITCHER & WALKTHROUGH CONTROLS (INSIDE PHONE)
+       ======================================================== */
+    .inapp-role-bar {
+      background: #0f172a;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      z-index: 55;
+      flex-shrink: 0;
+    }
+
+    .inapp-role-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 3px;
+      border-radius: 999px;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .inapp-role-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 4px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      position: relative;
+    }
+
+    .inapp-role-btn.active.customer {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.5);
+    }
+
+    .inapp-role-btn.active.merchant {
+      background: var(--merchant);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+    }
+
+    .inapp-role-btn.active.rider {
+      background: var(--rider);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.5);
+    }
+
+    .inapp-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      display: none;
+      animation: alertPulse 1.2s infinite;
+    }
+
+    @keyframes alertPulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .inapp-stepper-btn {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid #10b981;
+      color: #34d399;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .inapp-stepper-btn:hover {
+      background: #10b981;
+      color: #064e3b;
+    }
+
+    /* Push Toast Notification - Positioned at bottom of phone */
+    .push-toast {
+      position: absolute;
+      bottom: 74px;
+      left: 14px;
+      right: 14px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.14);
+      z-index: 95;
+      display: none;
+      animation: slideUpToast 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+
+    @keyframes slideUpToast {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .push-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+    .push-app {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4ade80;
+    }
+    .push-title { font-size: 13px; font-weight: 800; color: #ffffff; margin-bottom: 2px; }
+    .push-body { font-size: 11px; color: #cbd5e1; line-height: 1.35; }
+
+    /* ========================================================
+       SCROLLABLE APP VIEWPORT & ROLE SCREENS
+       ======================================================== */
+    .app-viewport {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: var(--bg);
+      position: relative;
+      scroll-behavior: smooth;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Modern Visible Subtle Scrollbar */
+    .app-viewport::-webkit-scrollbar {
+      width: 6px;
+    }
+    .app-viewport::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .app-viewport::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+    .app-viewport::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .role-view {
+      display: none;
+      min-height: 100%;
+      flex-direction: column;
+      flex: 1 0 auto;
+    }
+    .role-view.active {
+      display: flex;
+    }
+
+    .cust-page {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100% - 64px);
+    }
+
+    /* Bottom Home Bar Indicator */
+    .phone-bottom-bar {
+      height: 18px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      z-index: 50;
+      border-top: 1px solid #f1f5f9;
+    }
+    .home-indicator {
+      width: 120px;
+      height: 4px;
+      background: #0f172a;
+      border-radius: 4px;
+    }
+
+    /* CUSTOMER HEADER & LIVE GPS BAR */
+    .cust-header {
+      background: #ffffff;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    .loc-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .gps-detect-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      border: 1.5px solid #a7f3d0;
+      padding: 6px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gps-detect-btn:hover {
+      background: #d1fae5;
+    }
+
+    .gps-pulsing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #059669;
+      box-shadow: 0 0 8px #059669;
+      animation: alertPulse 1.5s infinite;
+    }
+
+    /* SEARCH BAR */
+    .search-box {
+      background: #f1f5f9;
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .search-box:focus-within {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+    }
+
+    .search-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      width: 100%;
+    }
+
+    /* HERO BANNER */
+    .hero-banner {
+      margin: 12px 16px;
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #ffffff;
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* CATEGORIES SLIDER */
+    .cat-slider {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 16px 10px 16px;
+    }
+    .cat-slider::-webkit-scrollbar { display: none; }
+
+    .cat-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .cat-chip.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
+    }
+
+    /* STORE SELECTOR CARDS */
+    .store-card {
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      cursor: pointer;
+      margin: 0 16px 10px 16px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .store-card:hover {
+      border-color: #a7f3d0;
+      transform: translateY(-1px);
+    }
+    .store-card.selected {
+      border-color: var(--primary);
+      background: #f0fdf4;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
+    }
+
+    /* PRODUCTS GRID */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 0 16px 20px 16px;
+    }
+
+    .product-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .product-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .product-thumb {
+      height: 75px;
+      background: #f8fafc;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      margin-bottom: 6px;
+    }
+
+    .product-brand {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .product-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.3;
+      margin: 2px 0 4px 0;
+      height: 32px;
+      overflow: hidden;
+    }
+
+    .product-pack {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .product-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .product-price {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--dark);
+    }
+
+    .btn-add {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1.5px solid var(--primary);
+      font-weight: 800;
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-add:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .qty-counter {
+      display: flex;
+      align-items: center;
+      background: var(--primary);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+    }
+    .qty-counter button {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 900;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+    }
+    .qty-counter button:hover {
+      background: rgba(0,0,0,0.15);
+    }
+    .qty-counter span {
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    /* FLOATING CART BAR */
+    .cart-float-bar {
+      position: sticky;
+      bottom: 74px;
+      margin: 0 16px 12px 16px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
+      cursor: pointer;
+      z-index: 45;
+      font-size: 13px;
+      transition: transform 0.2s;
+    }
+    .cart-float-bar:hover {
+      transform: translateY(-2px);
+    }
+
+    /* BOTTOM NAV BAR - Permanently pinned at bottom */
+    .bottom-navbar {
+      margin-top: auto;
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 4px 10px;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 14px;
+      gap: 2px;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .nav-item.active { color: var(--primary); }
+    .nav-item svg { width: 20px; height: 20px; stroke-width: 2.2; }
+
+    .nav-cart-badge {
+      position: absolute;
+      top: 0px;
+      right: 8px;
+      background: #ea580c;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 800;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-card {
+      margin: 12px 16px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badge-tag {
+      font-size: 10px;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+    .badge-tag.green { background: #dcfce7; color: #166534; }
+    .badge-tag.blue { background: #dbeafe; color: #1e40af; }
+    .badge-tag.orange { background: #ffedd5; color: #9a3412; }
+    .badge-tag.red { background: #fee2e2; color: #991b1b; }
+
+    /* REALISTIC HYPERLOCAL ROAD TRACKING MAP */
+    .simulated-map {
+      height: 180px;
+      background: #e2e8f0;
+      background-image: 
+        radial-gradient(#cbd5e1 2px, transparent 2px),
+        linear-gradient(to right, rgba(203, 213, 225, 0.6) 1.5px, transparent 1.5px),
+        linear-gradient(to bottom, rgba(203, 213, 225, 0.6) 1.5px, transparent 1.5px);
+      background-size: 24px 24px, 48px 48px, 48px 48px;
+      border-radius: var(--radius-md);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #cbd5e1;
+    }
+
+    .map-node-pin {
+      position: absolute;
+      top: calc(50% - 24px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 4;
+    }
+    .map-node-pin.store-node { left: 7%; }
+    .map-node-pin.home-node { right: 7%; }
+    .map-node-label {
+      font-size: 9px;
+      font-weight: 800;
+      background: #ffffff;
+      padding: 1px 6px;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      margin-top: 2px;
+      color: var(--dark);
+    }
+
+    .map-route-base {
+      position: absolute;
+      width: 76%;
+      height: 8px;
+      background: #94a3b8;
+      border-radius: 4px;
+      top: calc(50% - 4px);
+      left: 12%;
+      z-index: 2;
+    }
+    .map-route-base::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: 3px;
+      height: 2px;
+      background-image: linear-gradient(to right, #ffffff 50%, transparent 50%);
+      background-size: 10px 2px;
+    }
+
+    .map-route-traveled {
+      position: absolute;
+      height: 8px;
+      background: linear-gradient(90deg, #059669, #10b981);
+      border-radius: 4px;
+      top: calc(50% - 4px);
+      left: 12%;
+      z-index: 3;
+      transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+      max-width: 76%;
+    }
+
+    .map-rider-marker {
+      position: absolute;
+      top: calc(50% - 19px);
+      transform: translateX(-50%);
+      background: #ea580c;
+      color: #ffffff;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.6);
+      transition: left 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 6;
+      cursor: pointer;
+    }
+
+    .rider-radar-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid #ea580c;
+      animation: radarRing 1.6s infinite ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes radarRing {
+      0% { transform: scale(1); opacity: 0.9; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .btn-action-primary {
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+      transition: all 0.15s;
+    }
+    .btn-action-primary:hover { background: var(--primary-dark); }
+    .btn-action-primary.merchant {
+      background: var(--merchant);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+    .btn-action-primary.merchant:hover { background: var(--merchant-dark); }
+    .btn-action-primary.rider {
+      background: var(--rider);
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+    }
+    .btn-action-primary.rider:hover { background: var(--rider-dark); }
+
+    .btn-action-secondary {
+      width: 100%;
+      background: #f1f5f9;
+      color: var(--dark);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-action-secondary:hover { background: #e2e8f0; }
+
+    /* Missing Item Protocol Preference Selector */
+    .missing-pref-card {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .missing-pref-card:hover {
+      border-color: #cbd5e1;
+      background: #f1f5f9;
+    }
+    .missing-pref-card.selected {
+      background: #f0fdf4;
+      border-color: #059669;
+      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.12);
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-drawer {
+      background: #ffffff;
+      width: 100%;
+      border-radius: 28px 28px 0 0;
+      padding: 20px 18px 28px 18px;
+      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- Broad Mobile Smartphone Bezel & Frame -->
+  <div class="mobile-frame" id="phone-frame">
+    
+    <!-- Phone Top Status Bar & Dynamic Island -->
+    <div class="phone-top-bar">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="font-weight: 900; font-size: 14.5px; letter-spacing: -0.03em; color: var(--primary);">Loco<span style="color: var(--dark);">Kart</span></span>
+        <span id="system-time" style="font-size: 11px; font-weight: 700; color: #64748b;">18:30</span>
+      </div>
+      <div class="dynamic-island">
+        <div class="island-dot"></div>
+        <div class="island-lens"></div>
+      </div>
+      <div class="status-network">
+        <span>5G</span>
+        <span>📶</span>
+        <span>🔋</span>
+      </div>
+    </div>
+
+    <!-- IN-APP ROLE SWITCHER & GUIDED WORKFLOW (INSIDE THE PHONE) -->
+    <div class="inapp-role-bar">
+      <div class="inapp-role-tabs">
+        <button class="inapp-role-btn active customer" id="inapp-btn-customer" onclick="setAppRole('customer')">
+          <span>🛍️ Customer</span>
+        </button>
+        <button class="inapp-role-btn merchant" id="inapp-btn-merchant" onclick="setAppRole('merchant')">
+          <span>🏪 Merchant</span>
+          <span class="inapp-badge-dot" id="dot-merchant-alert"></span>
+        </button>
+        <button class="inapp-role-btn rider" id="inapp-btn-rider" onclick="setAppRole('rider')">
+          <span>🛵 Rider</span>
+          <span class="inapp-badge-dot" id="dot-rider-alert"></span>
+        </button>
+      </div>
+
+      <!-- Quick Step-by-Step Flow Controller -->
+      <button class="inapp-stepper-btn" id="btn-next-step" onclick="stepForwardWorkflow()" title="Advance Workflow Step">
+        <span id="stepper-step-num">Step 1</span> ⏩
+      </button>
+    </div>
+
+    <!-- Push Notification Toast (Inside Phone, Bottom Positioned) -->
+    <div class="push-toast" id="push-toast" onclick="onToastClick()">
+      <div class="push-header">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="push-app" id="toast-app">🔔 LocoKart • Live</span>
+          <span style="font-size: 9px; color: #94a3b8;">Just now</span>
+        </div>
+        <span onclick="dismissToastNow(event)" style="font-size: 13px; color: #94a3b8; padding: 0 4px; line-height: 1; cursor: pointer;" title="Dismiss">✕</span>
+      </div>
+      <div class="push-title" id="toast-title">Notification Title</div>
+      <div class="push-body" id="toast-body">Notification details.</div>
+    </div>
+
+    <!-- Scrollable Phone App Viewport -->
+    <div class="app-viewport" id="app-viewport">
+
+      <!-- =========================================================================
+           ROLE 1: CUSTOMER APPLICATION
+           ========================================================================= -->
+      <div class="role-view active" id="view-customer">
+        
+        <!-- Customer Subpage 1: Home & Catalog -->
+        <div id="cust-page-home" class="cust-page" style="padding-bottom: 30px;">
+          
+          <!-- Sticky Header: Real GPS Detection & Instant Search -->
+          <div class="cust-header">
+            <div class="loc-bar">
+              <div class="gps-detect-btn" onclick="requestLiveDeviceGPS()" title="Click to detect real device GPS">
+                <span class="gps-pulsing-dot"></span>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 4px;">
+                    <strong style="font-size: 12px; color: var(--dark);" id="gps-addr-title">Indiranagar, Bangalore</strong>
+                    <span style="font-size: 10px;">📍</span>
+                  </div>
+                  <div style="font-size: 10px; color: #047857; font-weight: 700;" id="gps-coords-display">
+                    GPS: 12.971°N, 77.641°E (2km Geofence Active)
+                  </div>
+                </div>
+              </div>
+              <button class="btn-action-secondary" onclick="requestLiveDeviceGPS()" style="width: auto; padding: 5px 9px; font-size: 10px; font-weight: 800; background: #ecfdf5; color: #047857; border-color: #a7f3d0;">
+                Detect GPS 🛰️
+              </button>
+            </div>
+
+            <!-- Interactive Search Bar -->
+            <div class="search-box">
+              <span style="font-size: 15px;">🔍</span>
+              <input type="text" class="search-input" id="search-input" placeholder="Search milk, atta, chips, soap, butter, salt..." autocomplete="off">
+              <span id="search-clear-btn" style="cursor: pointer; display: none; font-size: 13px; color: #94a3b8; padding: 2px 6px;" onclick="clearSearch()">✕</span>
+            </div>
+          </div>
+
+          <!-- Active Search Result Banner (Appears right under search bar when typing) -->
+          <div id="search-active-banner" style="display: none; padding: 10px 16px 2px 16px; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--dark);">Results for <span id="search-banner-query" style="color: var(--primary);">""</span></span>
+            </div>
+            <button onclick="clearSearch()" style="background: none; border: none; color: #ef4444; font-size: 11px; font-weight: 800; cursor: pointer;">Clear Search ✕</button>
+          </div>
+
+          <!-- Browsing Sections (Hidden during search so products appear directly below search bar) -->
+          <div id="home-browse-sections">
+            <!-- Hero Promo Banner -->
+            <div class="hero-banner">
+              <span class="badge-tag green" style="background: rgba(255,255,255,0.25); color: #ffffff; margin-bottom: 6px; display: inline-block;">⚡ 15-20 Min Local Kirana Drop</span>
+              <h2 style="font-size: 17px; font-weight: 900; margin-bottom: 4px;">Exact Counter MRP. No Hidden Markups.</h2>
+              <p style="font-size: 11px; opacity: 0.95; line-height: 1.4;">Direct shelf inventory from your neighborhood physical kiranas with a 4-unit cushion buffer.</p>
+            </div>
+
+            <!-- Select Local Kirana Store -->
+            <div style="padding: 0 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <h4 style="font-size: 14px; font-weight: 800;">Select Fulfilling Store</h4>
+              <span style="font-size: 11px; color: var(--primary); font-weight: 700;">Within 2km Corridor</span>
+            </div>
+            <div id="stores-list-container">
+              <!-- Dynamically populated via JS -->
+            </div>
+
+            <!-- Category Slider -->
+            <div style="padding: 0 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <h4 style="font-size: 14px; font-weight: 800;">Shop by Category</h4>
+              <span style="font-size: 11px; color: var(--text-muted);" id="active-cat-label">All Shelves</span>
+            </div>
+            <div class="cat-slider" id="category-chips-row">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Product Catalog Section -->
+          <div style="padding: 0 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-size: 14px; font-weight: 800;" id="catalog-section-title">Physical Store Shelf Inventory</h4>
+            <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;" id="catalog-items-count">32 items</span>
+          </div>
+          <div class="products-grid" id="customer-products-grid">
+            <!-- Dynamically populated via JS -->
+          </div>
+
+        </div>
+
+        <!-- Customer Subpage 2: Cart & Checkout -->
+        <div id="cust-page-cart" class="cust-page" style="display: none; padding-bottom: 30px;">
+          <div class="cust-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <button style="background: none; border: none; font-size: 18px; cursor: pointer;" onclick="switchCustTab('home')">←</button>
+            <h3 style="font-size: 15px; font-weight: 800;">Review & Checkout</h3>
+            <span style="font-size: 11px; color: #ef4444; font-weight: 800; cursor: pointer;" onclick="emptyCustomerCart()">Clear</span>
+          </div>
+
+          <!-- Fulfilling Store Card -->
+          <div class="app-card" style="background: #f0fdf4; border-color: #bbf7d0; display: flex; gap: 10px; align-items: center;">
+            <span style="font-size: 28px;">🏪</span>
+            <div>
+              <strong style="font-size: 13px; color: #166534;" id="cart-store-name">Sharma General Store (0.4 km)</strong>
+              <p style="font-size: 11px; color: #15803d; margin-top: 2px;">Direct counter pickup • 4-unit cushion buffer protected</p>
+            </div>
+          </div>
+
+          <!-- Cart Items List -->
+          <div class="app-card">
+            <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Items in Basket</h4>
+            <div id="cart-items-list">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Delivery Speed Tiers -->
+          <div class="app-card">
+            <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 8px;">Delivery Speed Tier</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+              <div id="tier-express" class="store-card" style="margin: 0; padding: 8px 6px; flex-direction: column; text-align: center; gap: 3px;" onclick="selectDeliveryTier('express')">
+                <span style="font-size: 16px;">⚡</span>
+                <strong style="font-size: 11px;">Express</strong>
+                <span style="font-size: 9px; color: var(--text-muted);">15-20m</span>
+                <strong style="font-size: 12px; color: var(--dark);">₹19</strong>
+              </div>
+              <div id="tier-standard" class="store-card selected" style="margin: 0; padding: 8px 6px; flex-direction: column; text-align: center; gap: 3px;" onclick="selectDeliveryTier('standard')">
+                <span style="font-size: 16px;">🚲</span>
+                <strong style="font-size: 11px;">Standard</strong>
+                <span style="font-size: 9px; color: var(--text-muted);">25-30m</span>
+                <strong style="font-size: 12px; color: var(--dark);" id="tier-standard-fee">₹9</strong>
+              </div>
+              <div id="tier-batched" class="store-card" style="margin: 0; padding: 8px 6px; flex-direction: column; text-align: center; gap: 3px;" onclick="selectDeliveryTier('batched')">
+                <span style="font-size: 16px;">📦</span>
+                <strong style="font-size: 11px;">Batched</strong>
+                <span style="font-size: 9px; color: var(--text-muted);">Route slot</span>
+                <strong style="font-size: 12px; color: var(--primary);">FREE</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Missing Item Protocol Preference (3 Interactive Options) -->
+          <div class="app-card" style="border-left: 4px solid var(--primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <h4 style="font-size: 13px; font-weight: 800; color: #166534;">Missing Shelf Item Protocol</h4>
+              <span class="badge-tag green">Select Policy</span>
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+              If a physical store walk-in bought the last unit before packing:
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- Option 1: Instant UPI Refund (Default) -->
+              <div class="missing-pref-card selected" id="opt-instant-refund" onclick="selectMissingItemPreference('instant_refund')">
+                <input type="radio" name="missing_pref" id="radio-instant-refund" checked style="accent-color: var(--primary); margin-top: 2px;">
+                <div style="flex: 1;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="font-size: 12px; color: var(--dark);">⚡ Instant UPI Refund (Recommended)</strong>
+                    <span class="badge-tag green" style="font-size: 9px;">Auto Refund</span>
+                  </div>
+                  <p style="font-size: 10.5px; color: #64748b; margin-top: 2px; line-height: 1.35;">
+                    Automatically credit missing item amount back to your original UPI account before rider departs store. Zero friction.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Option 2: Call & Replace -->
+              <div class="missing-pref-card" id="opt-call-replace" onclick="selectMissingItemPreference('call_replace')">
+                <input type="radio" name="missing_pref" id="radio-call-replace" style="accent-color: var(--primary); margin-top: 2px;">
+                <div style="flex: 1;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="font-size: 12px; color: var(--dark);">📞 Call & Replace</strong>
+                    <span class="badge-tag blue" style="font-size: 9px;">Merchant Call</span>
+                  </div>
+                  <p style="font-size: 10.5px; color: #64748b; margin-top: 2px; line-height: 1.35;">
+                    Kirana merchant calls you within 90 seconds to offer alternate brand, pack size, or flavor.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Option 3: Cancel Entire Order -->
+              <div class="missing-pref-card" id="opt-cancel-order" onclick="selectMissingItemPreference('cancel_order')">
+                <input type="radio" name="missing_pref" id="radio-cancel-order" style="accent-color: var(--primary); margin-top: 2px;">
+                <div style="flex: 1;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="font-size: 12px; color: var(--dark);">🚫 Cancel Entire Order</strong>
+                    <span class="badge-tag red" style="font-size: 9px;">Strict Order</span>
+                  </div>
+                  <p style="font-size: 10.5px; color: #64748b; margin-top: 2px; line-height: 1.35;">
+                    Do not dispatch partial basket. Immediately cancel whole order with 100% full UPI refund.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bill Summary -->
+          <div class="app-card">
+            <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Bill Summary (Counter MRP)</h4>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #475569; margin-bottom: 6px;">
+              <span>Item Total</span>
+              <strong id="bill-subtotal">₹47</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #475569; margin-bottom: 6px;">
+              <span>Delivery Fee</span>
+              <strong id="bill-delivery">₹9</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #475569; margin-bottom: 10px;">
+              <span>Tamper-Evident Bag & Seal</span>
+              <strong>₹5</strong>
+            </div>
+            <div style="border-top: 1px solid var(--border); padding-top: 8px; display: flex; justify-content: space-between; align-items: baseline;">
+              <strong style="font-size: 14px; color: var(--dark);">Grand Total</strong>
+              <strong style="font-size: 18px; color: var(--primary);" id="bill-total">₹61</strong>
+            </div>
+            <button class="btn-action-primary" style="margin-top: 12px;" onclick="openPaymentDrawer()">
+              Choose Fast UPI & Pay (<span id="btn-pay-amount-label">₹61</span>) →
+            </button>
+          </div>
+        </div>
+
+        <!-- Customer Subpage 3: Live Tracking & Delivery Handshake -->
+        <div id="cust-page-tracking" class="cust-page" style="display: none; padding-bottom: 30px;">
+          <div class="cust-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <button style="background: none; border: none; font-size: 18px; cursor: pointer;" onclick="switchCustTab('home')">←</button>
+            <h3 style="font-size: 15px; font-weight: 800;" id="cust-tracking-header-title">Live Order Dispatch</h3>
+            <span class="badge-tag blue" id="track-order-num">#LK-4821</span>
+          </div>
+
+          <!-- Dynamic Tracking & Delivery Confirmation Container -->
+          <div id="cust-tracking-dynamic-view">
+            <!-- Populated via renderCustomerTrackingView() -->
+          </div>
+        </div>
+
+        <!-- Customer Subpage 4: Past Orders -->
+        <div id="cust-page-orders" class="cust-page" style="display: none; padding-bottom: 30px;">
+          <div class="cust-header">
+            <h3 style="font-size: 16px; font-weight: 800;">My Orders</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Past deliveries from neighborhood kiranas</p>
+          </div>
+          <div id="past-orders-list" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 10px;">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Customer Subpage 5: Account & Profile -->
+        <div id="cust-page-profile" class="cust-page" style="display: none; padding-bottom: 30px;">
+          <div class="cust-header">
+            <h3 style="font-size: 16px; font-weight: 800;">My Profile</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rahul Verma • +91 98451 10293</p>
+          </div>
+          <div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="app-card" style="margin: 0; display: flex; gap: 12px; align-items: center;">
+              <div style="font-size: 28px; width: 48px; height: 48px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                👤
+              </div>
+              <div>
+                <h4 style="font-size: 14px; font-weight: 800;">Rahul Verma</h4>
+                <p style="font-size: 11px; color: var(--text-muted);">rahul.verma@example.com</p>
+                <span class="badge-tag green" style="font-size: 9px; margin-top: 3px; display: inline-block;">LocoPass Active</span>
+              </div>
+            </div>
+
+            <div class="app-card" style="margin: 0;">
+              <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 6px;">Live GPS Geofence</h4>
+              <p style="font-size: 12px; color: #334155; line-height: 1.4;" id="profile-gps-desc">
+                📍 Indiranagar, Ward 4 (Within 2.0km Kirana radius)
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Cart Bar (Appears when items are in cart) -->
+        <div class="cart-float-bar" id="cust-float-cart" onclick="switchCustTab('cart')" style="display: none;">
+          <div>
+            <span id="float-cart-count">2 items</span> • <strong id="float-cart-total" style="color: #86efac; font-size: 14px;">₹61</strong>
+          </div>
+          <div style="font-weight: 800; display: flex; align-items: center; gap: 4px;">
+            View Cart →
+          </div>
+        </div>
+
+        <!-- Customer Sticky Bottom Navigation -->
+        <nav class="bottom-navbar">
+          <button class="nav-item active" id="cust-nav-home" onclick="switchCustTab('home')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <span>Home</span>
+          </button>
+          <button class="nav-item" id="cust-nav-cart" onclick="switchCustTab('cart')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span>Cart</span>
+            <span class="nav-cart-badge" id="cust-nav-badge">2</span>
+          </button>
+          <button class="nav-item" id="cust-nav-tracking" onclick="switchCustTab('tracking')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <span>Tracking</span>
+          </button>
+          <button class="nav-item" id="cust-nav-orders" onclick="switchCustTab('orders')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            <span>Orders</span>
+          </button>
+          <button class="nav-item" id="cust-nav-profile" onclick="switchCustTab('profile')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span>Profile</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- =========================================================================
+           ROLE 2: MERCHANT PARTNER PORTAL
+           ========================================================================= -->
+      <div id="view-merchant" class="role-view" style="padding-bottom: 24px;">
+        <div style="background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white; padding: 16px; border-radius: 0 0 18px 18px; box-shadow: var(--shadow-md);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85; font-weight: 700;">Partner POS • Ward 4</div>
+              <h2 style="font-size: 16px; font-weight: 800; margin-top: 2px;" id="merch-store-title">Sharma Kirana & General Store</h2>
+              <div style="font-size: 10px; opacity: 0.9; margin-top: 2px;">Store ID: <code>SHR-BLR-04</code> • 2km Cluster Active</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+              <span style="width: 7px; height: 7px; background: #4ade80; border-radius: 50%;"></span>
+              Online
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; background: rgba(0,0,0,0.18); padding: 8px; border-radius: 12px;">
+            <div style="text-align: center;">
+              <div style="font-size: 9px; opacity: 0.8;">TODAY ORDERS</div>
+              <div style="font-size: 15px; font-weight: 900;">18</div>
+            </div>
+            <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.15); border-right: 1px solid rgba(255,255,255,0.15);">
+              <div style="font-size: 9px; opacity: 0.8;">REVENUE</div>
+              <div style="font-size: 15px; font-weight: 900;">₹3,420</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 9px; opacity: 0.8;">CUSHION BUFFER</div>
+              <div style="font-size: 15px; font-weight: 900; color: #86efac;">4 Units</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 12px 16px;">
+          <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px;">Order Fulfillment Terminal</div>
+          <div id="merch-active-order-box">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- Shelf Cushion Buffer Demonstration -->
+        <div class="app-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h4 style="font-size: 13px; font-weight: 800;">Shelf Cushion Buffer Protection</h4>
+            <span class="badge-tag green">Rule: Keep 4 for Walk-ins</span>
+          </div>
+          <p style="font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px;">
+            Physical stores reserve 4 units so physical counter walk-in customers never encounter out-of-stock items.
+          </p>
+          <div style="flex-direction: column; gap: 6px; font-size: 11px; display: flex;">
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>Amul Taaza Milk 500ml</span>
+              <span>Shelf: <strong>14</strong> | App Available: <strong style="color: #059669;">10 units</strong></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>Lay's Magic Masala 50g</span>
+              <span>Shelf: <strong>5</strong> | App Available: <strong style="color: #ea580c;">1 unit</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           ROLE 3: FULFILLMENT RIDER APP
+           ========================================================================= -->
+      <div id="view-rider" class="role-view" style="padding-bottom: 24px;">
+        <div style="background: linear-gradient(135deg, #c2410c, #ea580c); color: white; padding: 16px; border-radius: 0 0 18px 18px; box-shadow: var(--shadow-md);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85; font-weight: 700;">Rider App • EV Fleet #14</div>
+              <h2 style="font-size: 16px; font-weight: 800; margin-top: 2px;">Rajesh Kumar</h2>
+              <div style="font-size: 10px; opacity: 0.9; margin-top: 2px;">⭐ 4.92 • 2km Neighborhood Corridor Active</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700;">
+              Duty Active
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; background: rgba(0,0,0,0.18); padding: 8px; border-radius: 12px;">
+            <div style="text-align: center;">
+              <div style="font-size: 9px; opacity: 0.8;">TODAY TRIPS</div>
+              <div style="font-size: 15px; font-weight: 900;">9 Trips</div>
+            </div>
+            <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.15); border-right: 1px solid rgba(255,255,255,0.15);">
+              <div style="font-size: 9px; opacity: 0.8;">EARNINGS</div>
+              <div style="font-size: 15px; font-weight: 900;">₹342</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 9px; opacity: 0.8;">CLUSTER RADIUS</div>
+              <div style="font-size: 15px; font-weight: 900; color: #fed7aa;">1.4 km</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 12px 16px;">
+          <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px;">Active Trip Terminal</div>
+          <div id="rider-active-job-box">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Phone Bottom Home Indicator -->
+    <div class="phone-bottom-bar">
+      <div class="home-indicator"></div>
+    </div>
+
+  </div>
+
+  <!-- FAST UPI PAYMENT MODAL (INSIDE PHONE CONTAINER) -->
+  <div class="modal-backdrop" id="payment-modal-backdrop" onclick="closePaymentDrawer()">
+    <div class="modal-drawer" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="font-size: 16px; font-weight: 800;">Select Payment Method</h3>
+        <button onclick="closePaymentDrawer()" style="background: none; border: none; font-size: 18px; cursor: pointer;">✕</button>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 14px;">
+        <div style="font-size: 11px; color: #64748b;">Payable Amount</div>
+        <div style="font-size: 24px; font-weight: 900; color: #059669;" id="modal-pay-amount">₹61</div>
+        <div style="font-size: 11px; color: #475569; margin-top: 2px;">Paying to: <strong>Sharma General Store Counter</strong></div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 800; margin-bottom: 8px;">Select Payment Option:</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+        <label id="pay-opt-gpay-label" style="display: flex; align-items: center; gap: 10px; background: #ffffff; border: 1.5px solid #059669; border-radius: 12px; padding: 10px; cursor: pointer;">
+          <input type="radio" name="payment_mode" value="gpay" checked style="accent-color: #059669; width: 16px; height: 16px;" onchange="updatePaymentMethodSelection()">
+          <span style="font-size: 18px;">🟢</span>
+          <div style="flex: 1;">
+            <strong style="font-size: 12px; display: block; color: var(--dark);">Google Pay</strong>
+            <span style="font-size: 10px; color: #64748b;">Instant UPI settlement • Zero payment surcharge</span>
+          </div>
+        </label>
+        <label id="pay-opt-cod-label" style="display: flex; align-items: center; gap: 10px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 10px; cursor: pointer;">
+          <input type="radio" name="payment_mode" value="cod" style="accent-color: #059669; width: 16px; height: 16px;" onchange="updatePaymentMethodSelection()">
+          <span style="font-size: 18px;">💵</span>
+          <div style="flex: 1;">
+            <strong style="font-size: 12px; display: block; color: var(--dark);">Cash on Delivery (COD)</strong>
+            <span style="font-size: 10px; color: #64748b;">Pay cash or UPI scan at doorstep upon bag seal verification</span>
+          </div>
+        </label>
+      </div>
+
+      <button class="btn-action-primary" id="btn-modal-confirm-pay" onclick="processAtomicUPIPayment()">
+        Confirm Order (<span id="modal-btn-pay-amount">₹61</span>) 🔒
+      </button>
+    </div>
+  </div>
+
+  <!-- Merchant Decline Reason Modal (Phase 2 Decision Gate) -->
+  <div class="modal-backdrop" id="decline-modal-backdrop" style="display: none;" onclick="closeDeclineModal()">
+    <div class="modal-drawer" onclick="event.stopPropagation()">
+      <div style="width: 36px; height: 4px; background: #cbd5e1; border-radius: 2px; margin: 0 auto 14px auto;"></div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #dc2626;">Decline Order LK-4821?</h3>
+        <button onclick="closeDeclineModal()" style="background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer;">✕</button>
+      </div>
+      
+      <p style="font-size: 11px; color: #64748b; line-height: 1.4; margin-bottom: 12px;">
+        As per the 120s Kirana Decision Gate, declining triggers an automatic 100% full UPI refund back to customer Rahul Verma.
+      </p>
+
+      <div style="font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 6px;">Select Reason for Cancellation:</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+        <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 12px; cursor: pointer; background: #ffffff;">
+          <input type="radio" name="decline-reason" value="Physical Counter Stock Depleted" checked style="accent-color: #dc2626;">
+          <div>
+            <strong style="font-size: 12px; display: block; color: var(--dark);">Physical Counter Out of Stock</strong>
+            <span style="font-size: 10px; color: #64748b;">Walk-in counter customers bought remaining shelf units</span>
+          </div>
+        </label>
+        <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 12px; cursor: pointer; background: #ffffff;">
+          <input type="radio" name="decline-reason" value="Peak Counter Rush / Queue Overflow" style="accent-color: #dc2626;">
+          <div>
+            <strong style="font-size: 12px; display: block; color: var(--dark);">Counter Rush / Queue Overflow</strong>
+            <span style="font-size: 10px; color: #64748b;">Counter is too crowded to pack in under 2 minutes</span>
+          </div>
+        </label>
+        <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 12px; cursor: pointer; background: #ffffff;">
+          <input type="radio" name="decline-reason" value="Store Closing Soon" style="accent-color: #dc2626;">
+          <div>
+            <strong style="font-size: 12px; display: block; color: var(--dark);">Store Closing Soon</strong>
+            <span style="font-size: 10px; color: #64748b;">Store is shuttering for afternoon/night break</span>
+          </div>
+        </label>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-action-primary" onclick="submitMerchantDecline()" style="flex: 2; background: #dc2626; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);">
+          Confirm Decline & Refund 100% 💸
+        </button>
+        <button class="btn-action-secondary" onclick="closeDeclineModal()" style="flex: 1;">
+          Keep Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT REACTIVE ENGINE -->
+  <script>
+    /* ========================================================
+       1. GLOBAL REACTIVE STATE ENGINE
+       ======================================================== */
+    const State = {
+      activeRole: 'customer',
+      custTab: 'home',
+      workflowStep: 1,
+      selectedStore: 'sharma-store',
+      activeCategory: 'all',
+      searchQuery: '',
+      tierFee: 9,
+      bagFee: 5,
+      tamperSealCode: 'LK-SEAL-8821',
+      handshakeOTP: '4821',
+
+      // Real Device GPS State
+      gps: {
+        lat: 12.9716,
+        lng: 77.6412,
+        address: 'Indiranagar, Bangalore (Ward 4)',
+        accuracyMeters: 14,
+        isLiveDetected: false
+      },
+
+      stores: [
+        { id: 'sharma-store', name: 'Sharma General Store', distance: 0.4, rating: '4.8 ★', coords: [12.9725, 77.6420], cushionStock: 4, desc: 'Chiller & Daily Staples' },
+        { id: 'lakshmi-store', name: 'Lakshmi Provision Store', distance: 0.8, rating: '4.7 ★', coords: [12.9740, 77.6450], cushionStock: 4, desc: 'Atta, Rice & Spices' },
+        { id: 'gupta-store', name: 'Gupta Supermarket', distance: 1.2, rating: '4.9 ★', coords: [12.9700, 77.6380], cushionStock: 4, desc: 'Snacks & Beverages' }
+      ],
+
+      categories: [
+        { id: 'all', name: 'All Shelves', icon: '🛒' },
+        { id: 'dairy', name: 'Dairy & Milk', icon: '🥛' },
+        { id: 'snacks', name: 'Munchies & Snacks', icon: '🥨' },
+        { id: 'staples', name: 'Atta, Dal & Staples', icon: '🌾' },
+        { id: 'beverages', name: 'Cold Drinks', icon: '🥤' },
+        { id: 'fruits', name: 'Fresh Produce', icon: '🍅' },
+        { id: 'personal', name: 'Personal Care', icon: '🧼' }
+      ],
+
+      catalog: [
+        // 1. Dairy & Milk
+        { id: 'sku-1', name: 'Amul Taaza Homogenised Milk', qtyStr: '500 ml', price: 27, cat: 'dairy', badge: 'Fresh Chilled', img: '🥛', stock: 14 },
+        { id: 'sku-2', name: 'Nandini Pure Cow Milk', qtyStr: '500 ml', price: 28, cat: 'dairy', badge: 'Chilled', img: '🥛', stock: 12 },
+        { id: 'sku-3', name: 'Amul Pasteurised Butter', qtyStr: '100 g', price: 58, cat: 'dairy', badge: 'Chilled', img: '🧈', stock: 15 },
+        { id: 'sku-4', name: 'Milky Mist Fresh Paneer', qtyStr: '200 g', price: 95, cat: 'dairy', badge: 'Fresh', img: '🧀', stock: 8 },
+        { id: 'sku-5', name: 'Mother Dairy Classic Dahi', qtyStr: '400 g', price: 35, cat: 'dairy', badge: 'Chilled Curd', img: '🥣', stock: 10 },
+        { id: 'sku-6', name: 'Amul Processed Cheese Slices', qtyStr: '200 g (10 pcs)', price: 145, cat: 'dairy', badge: 'Chilled', img: '🧀', stock: 9 },
+
+        // 2. Munchies & Snacks
+        { id: 'sku-7', name: 'Lay\'s Magic Masala Chips', qtyStr: '50 g', price: 20, cat: 'snacks', badge: 'Best Seller', img: '🥔', stock: 5 },
+        { id: 'sku-8', name: 'Kurkure Masala Munch', qtyStr: '75 g', price: 20, cat: 'snacks', badge: 'Crunchy', img: '🥨', stock: 8 },
+        { id: 'sku-9', name: 'Haldiram\'s Nagpur Bhujia Sev', qtyStr: '200 g', price: 55, cat: 'snacks', badge: 'Savory', img: '🥨', stock: 16 },
+        { id: 'sku-10', name: 'Britannia Good Day Butter Cookies', qtyStr: '120 g', price: 30, cat: 'snacks', badge: 'Tea-time', img: '🍪', stock: 14 },
+        { id: 'sku-11', name: 'Parle-G Original Glucose Biscuits', qtyStr: '250 g', price: 25, cat: 'snacks', badge: 'Classic', img: '🍪', stock: 22 },
+        { id: 'sku-12', name: 'Doritos Cheese Supreme Nachos', qtyStr: '60 g', price: 35, cat: 'snacks', badge: 'Crispy', img: '🔺', stock: 11 },
+
+        // 3. Staples, Dal, Rice & Spices
+        { id: 'sku-13', name: 'Tata Salt Vacuum Evaporated', qtyStr: '1 kg', price: 28, cat: 'staples', badge: 'Iodized', img: '🧂', stock: 20 },
+        { id: 'sku-14', name: 'Aashirvaad Chakki Fresh Atta', qtyStr: '5 kg', price: 245, cat: 'staples', badge: 'Whole Wheat', img: '🌾', stock: 6 },
+        { id: 'sku-15', name: 'Fortune Sunlite Refined Sunflower Oil', qtyStr: '1 L', price: 145, cat: 'staples', badge: 'Cooking Oil', img: '🌻', stock: 10 },
+        { id: 'sku-16', name: 'Tata Sampann Unpolished Toor Dal', qtyStr: '1 kg', price: 175, cat: 'staples', badge: 'High Protein', img: '🥣', stock: 12 },
+        { id: 'sku-17', name: 'India Gate Super Basmati Rice', qtyStr: '1 kg', price: 130, cat: 'staples', badge: 'Long Grain', img: '🍚', stock: 9 },
+        { id: 'sku-18', name: 'Catch Pure Turmeric Powder', qtyStr: '200 g', price: 42, cat: 'staples', badge: 'Pure Spices', img: '🟡', stock: 18 },
+        { id: 'sku-19', name: 'Madhur Pure Crystal Sugar', qtyStr: '1 kg', price: 52, cat: 'staples', badge: 'Sulphur-free', img: '🍬', stock: 15 },
+
+        // 4. Cold Drinks & Beverages
+        { id: 'sku-20', name: 'Coca-Cola Zero Sugar Can', qtyStr: '300 ml', price: 40, cat: 'beverages', badge: 'Chilled Can', img: '🥤', stock: 10 },
+        { id: 'sku-21', name: 'Thums Up Charged Carbonated Drink', qtyStr: '750 ml', price: 45, cat: 'beverages', badge: 'Chilled Bottle', img: '🍾', stock: 14 },
+        { id: 'sku-22', name: 'Red Bull Energy Drink Can', qtyStr: '250 ml', price: 125, cat: 'beverages', badge: 'Chilled', img: '⚡', stock: 8 },
+        { id: 'sku-23', name: 'Tata Tea Gold Rich Aroma', qtyStr: '250 g', price: 150, cat: 'beverages', badge: 'Assam Leaves', img: '☕', stock: 12 },
+        { id: 'sku-24', name: 'Nescafe Classic Instant Coffee Jar', qtyStr: '50 g Jar', price: 185, cat: 'beverages', badge: 'Original', img: '☕', stock: 7 },
+
+        // 5. Fresh Produce
+        { id: 'sku-25', name: 'Fresh Hybrid Vine Tomatoes', qtyStr: '1 kg', price: 32, cat: 'fruits', badge: 'Farm Fresh', img: '🍅', stock: 18 },
+        { id: 'sku-26', name: 'Fresh Nashik Red Onions', qtyStr: '1 kg', price: 38, cat: 'fruits', badge: 'Fresh Crop', img: '🧅', stock: 25 },
+        { id: 'sku-27', name: 'Fresh Jyoti Table Potatoes', qtyStr: '1 kg', price: 34, cat: 'fruits', badge: 'Fresh Crop', img: '🥔', stock: 30 },
+        { id: 'sku-28', name: 'Fresh Cavendish Yellow Bananas', qtyStr: '500 g (4-5 pcs)', price: 30, cat: 'fruits', badge: 'Sweet & Ripe', img: '🍌', stock: 15 },
+
+        // 6. Personal Care & Cleaning
+        { id: 'sku-29', name: 'Dettol Germ Protection Soap', qtyStr: '75 g (Pack of 3)', price: 95, cat: 'personal', badge: 'Antibacterial', img: '🧼', stock: 9 },
+        { id: 'sku-30', name: 'Colgate Strong Teeth Toothpaste', qtyStr: '150 g', price: 78, cat: 'personal', badge: 'Calcium Boost', img: '🪥', stock: 14 },
+        { id: 'sku-31', name: 'Vim Dishwash Lemon Gel Bottle', qtyStr: '500 ml', price: 115, cat: 'personal', badge: 'Degreasing', img: '🍋', stock: 12 },
+        { id: 'sku-32', name: 'Surf Excel Quick Wash Detergent', qtyStr: '1 kg', price: 145, cat: 'personal', badge: 'Easy Wash', img: '🧺', stock: 10 }
+      ],
+
+      cart: [
+        { id: 'sku-1', name: 'Amul Taaza Milk 500ml', price: 27, qty: 1, img: '🥛' },
+        { id: 'sku-7', name: 'Lay\'s Magic Masala 50g', price: 20, qty: 1, img: '🥔' }
+      ],
+
+      order: {
+        id: 'LK-4821',
+        status: 'DRAFT',
+        storeName: 'Sharma General Store',
+        customerName: 'Rahul Verma',
+        deliveryAddress: 'Flat 302, Green Valley Apts, Indiranagar',
+        subtotal: 47,
+        deliveryFee: 9,
+        bagFee: 5,
+        total: 61,
+        merchantTimerSeconds: 120,
+        missingSkuHandled: false,
+        missingItemPreference: 'instant_refund',
+        refundAmount: 0,
+        gpsProgressPercent: 35,
+        etaMinutes: 14,
+        rating: 5,
+        paymentMode: 'Google Pay',
+        isCOD: false
+      },
+
+      pastOrders: [
+        { id: 'LK-3910', date: 'Yesterday, 8:45 PM', items: 'Amul Butter 100g, Tata Tea Gold 250g', total: 185, status: 'Delivered' },
+        { id: 'LK-3108', date: '14 Nov 2026', items: 'Aashirvaad Atta 5kg, Sugar 1kg', total: 295, status: 'Delivered' }
+      ]
+    };
+
+    /* ========================================================
+       2. REAL GPS LOCATION API INTEGRATION
+       ======================================================== */
+    function requestLiveDeviceGPS() {
+      const coordsDisplay = document.getElementById('gps-coords-display');
+      const addrTitle = document.getElementById('gps-addr-title');
+
+      if (!navigator.geolocation) {
+        showToast('GPS Status', 'Using Hyperlocal Geofenced Ward 4 (12.971°N, 77.641°E)');
+        return;
+      }
+
+      showToast('🛰️ Requesting Real Device GPS', 'Detecting your live coordinates...');
+      if (coordsDisplay) coordsDisplay.textContent = 'Detecting device GPS...';
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          State.gps.lat = lat;
+          State.gps.lng = lng;
+          State.gps.accuracyMeters = Math.round(position.coords.accuracy || 15);
+          State.gps.isLiveDetected = true;
+
+          // Recalculate distances to stores
+          State.stores.forEach(st => {
+            const d = calculateHaversineKm(lat, lng, st.coords[0], st.coords[1]);
+            st.distance = parseFloat(d.toFixed(1));
+          });
+
+          if (coordsDisplay) {
+            coordsDisplay.textContent = `Live GPS: ${lat.toFixed(3)}°N, ${lng.toFixed(3)}°E (±${State.gps.accuracyMeters}m)`;
+          }
+          if (addrTitle) {
+            addrTitle.textContent = `Live Corridor (${lat.toFixed(3)}°N, ${lng.toFixed(3)}°E)`;
+          }
+
+          const profileDesc = document.getElementById('profile-gps-desc');
+          if (profileDesc) {
+            profileDesc.textContent = `📍 Live Device GPS: ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E • Precision ±${State.gps.accuracyMeters}m • In 2km Geofence`;
+          }
+
+          renderStoreCards();
+          showToast('✓ Real GPS Locked', `Coordinates: ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E. Stores updated.`);
+        },
+        (error) => {
+          console.warn('Geolocation notice:', error.message);
+          // Fallback simulation within Bangalore corridor
+          State.gps.lat = 12.9716;
+          State.gps.lng = 77.6412;
+          if (coordsDisplay) {
+            coordsDisplay.textContent = `GPS: 12.972°N, 77.641°E (Active 2km Geofence)`;
+          }
+          showToast('GPS Geofence Active', 'Indiranagar Cluster: 12.972°N, 77.641°E locked.');
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
+      );
+    }
+
+    function calculateHaversineKm(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Earth radius km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return Math.max(0.3, R * c);
+    }
+
+    /* ========================================================
+       3. IN-APP ROLE SWITCHER & NAVIGATION
+       ======================================================== */
+    function setAppRole(role) {
+      State.activeRole = role;
+
+      // Update In-App Role Switcher Buttons
+      document.querySelectorAll('.inapp-role-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`inapp-btn-${role}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Update Active View Screen
+      document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
+      const targetView = document.getElementById(`view-${role}`);
+      if (targetView) targetView.classList.add('active');
+
+      // Clear alert notification dot
+      const alertDot = document.getElementById(`dot-${role}-alert`);
+      if (alertDot) alertDot.style.display = 'none';
+
+      // Re-render role view
+      if (role === 'customer') renderCustomerView();
+      if (role === 'merchant') renderMerchantView();
+      if (role === 'rider') renderRiderView();
+    }
+
+    function switchCustTab(tab) {
+      State.custTab = tab;
+
+      // Update subpage visibility
+      document.querySelectorAll('.cust-page').forEach(page => {
+        page.style.display = 'none';
+        page.classList.remove('active');
+      });
+      const targetPage = document.getElementById(`cust-page-${tab}`);
+      if (targetPage) {
+        targetPage.style.display = 'flex';
+        targetPage.classList.add('active');
+      }
+
+      // Update bottom nav icons
+      document.querySelectorAll('.bottom-navbar .nav-item').forEach(btn => btn.classList.remove('active'));
+      const navItem = document.getElementById(`cust-nav-${tab}`);
+      if (navItem) navItem.classList.add('active');
+
+      renderCustomerView();
+    }
+
+    /* ========================================================
+       4. NOTIFICATION TOAST & AUDIO SYNTHESIS
+       ======================================================== */
+    let toastTimeout = null;
+    let toastTargetRole = null;
+
+    function showToast(title, desc, roleToSwitch) {
+      const toast = document.getElementById('push-toast');
+      if (!toast) return;
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-body').textContent = desc;
+      toastTargetRole = roleToSwitch || null;
+
+      toast.style.display = 'block';
+      if (toastTimeout) clearTimeout(toastTimeout);
+      // Auto-dismiss after 2.6 seconds (prompt: only up for a few seconds)
+      toastTimeout = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2600);
+    }
+
+    function dismissToastNow(event) {
+      if (event) event.stopPropagation();
+      const toast = document.getElementById('push-toast');
+      if (toast) toast.style.display = 'none';
+      if (toastTimeout) clearTimeout(toastTimeout);
+    }
+
+    function onToastClick() {
+      const toast = document.getElementById('push-toast');
+      if (toast) toast.style.display = 'none';
+      if (toastTimeout) clearTimeout(toastTimeout);
+      if (toastTargetRole) {
+        setAppRole(toastTargetRole);
+      }
+    }
+
+    function playBeepSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.28);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } catch (e) {
+        // Audio fallback
+      }
+    }
+
+    /* ========================================================
+       5. INTERACTIVE SEARCH & CATEGORY FILTERING
+       ======================================================== */
+    function filterCategory(catId) {
+      State.activeCategory = catId;
+      const catObj = State.categories.find(c => c.id === catId);
+      const label = document.getElementById('active-cat-label');
+      if (label && catObj) label.textContent = catObj.name;
+
+      renderCategoryChips();
+      renderProductGrid();
+    }
+
+    function selectStore(storeId) {
+      State.selectedStore = storeId;
+      const storeObj = State.stores.find(s => s.id === storeId);
+      if (storeObj) {
+        State.order.storeName = storeObj.name;
+        const cartStoreName = document.getElementById('cart-store-name');
+        if (cartStoreName) cartStoreName.textContent = `${storeObj.name} (${storeObj.distance} km)`;
+        const merchTitle = document.getElementById('merch-store-title');
+        if (merchTitle) merchTitle.textContent = storeObj.name;
+        showToast('Store Selected', `${storeObj.name} (${storeObj.distance}km away) active for order.`);
+      }
+      renderStoreCards();
+    }
+
+    function handleCustomerSearch(query) {
+      State.searchQuery = query.trim();
+      const clearBtn = document.getElementById('search-clear-btn');
+      const browseSections = document.getElementById('home-browse-sections');
+      const searchBanner = document.getElementById('search-active-banner');
+      const bannerQuery = document.getElementById('search-banner-query');
+      const catalogTitle = document.getElementById('catalog-section-title');
+
+      if (State.searchQuery.length > 0) {
+        if (clearBtn) clearBtn.style.display = 'inline-block';
+        if (browseSections) browseSections.style.display = 'none';
+        if (searchBanner) {
+          searchBanner.style.display = 'flex';
+          if (bannerQuery) bannerQuery.textContent = `"${State.searchQuery}"`;
+        }
+        if (catalogTitle) catalogTitle.textContent = 'Instant Search Results';
+        // Immediately bring products directly beneath the search bar without scrolling
+        const vp = document.getElementById('app-viewport');
+        if (vp) vp.scrollTop = 0;
+      } else {
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (browseSections) browseSections.style.display = 'block';
+        if (searchBanner) searchBanner.style.display = 'none';
+        if (catalogTitle) catalogTitle.textContent = 'Physical Store Shelf Inventory';
+      }
+      renderProductGrid();
+    }
+
+    function clearSearch() {
+      State.searchQuery = '';
+      const input = document.getElementById('search-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      const clearBtn = document.getElementById('search-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'none';
+      const browseSections = document.getElementById('home-browse-sections');
+      if (browseSections) browseSections.style.display = 'block';
+      const searchBanner = document.getElementById('search-active-banner');
+      if (searchBanner) searchBanner.style.display = 'none';
+      const catalogTitle = document.getElementById('catalog-section-title');
+      if (catalogTitle) catalogTitle.textContent = 'Physical Store Shelf Inventory';
+      renderProductGrid();
+    }
+
+    /* ========================================================
+       6. CATALOG RENDERING & REAL-TIME CART ACTIONS
+       ======================================================== */
+    function renderCategoryChips() {
+      const row = document.getElementById('category-chips-row');
+      if (!row) return;
+
+      row.innerHTML = State.categories.map(cat => `
+        <div class="cat-chip ${State.activeCategory === cat.id ? 'active' : ''}" onclick="filterCategory('${cat.id}')">
+          <span>${cat.icon}</span>
+          <span>${cat.name}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderStoreCards() {
+      const container = document.getElementById('stores-list-container');
+      if (!container) return;
+
+      container.innerHTML = State.stores.map(store => `
+        <div class="store-card ${State.selectedStore === store.id ? 'selected' : ''}" onclick="selectStore('${store.id}')">
+          <span style="font-size: 26px;">🏪</span>
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <strong style="font-size: 13px; color: var(--dark);">${store.name}</strong>
+              <span class="badge-tag green">${store.rating}</span>
+            </div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+              ${store.distance} km away • ${store.desc} • 4-Unit Cushion
+            </div>
+          </div>
+          ${State.selectedStore === store.id ? '<span style="font-size: 16px; color: #059669; font-weight: 800;">✓</span>' : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderProductGrid() {
+      const grid = document.getElementById('customer-products-grid');
+      if (!grid) return;
+
+      const q = State.searchQuery.toLowerCase();
+      const filtered = State.catalog.filter(item => {
+        const matchCat = (State.activeCategory === 'all') || (item.cat === State.activeCategory);
+        const matchSearch = !q || item.name.toLowerCase().includes(q) || 
+                            item.badge.toLowerCase().includes(q) ||
+                            item.cat.toLowerCase().includes(q);
+        return matchCat && matchSearch;
+      });
+
+      const countEl = document.getElementById('catalog-items-count');
+      if (countEl) countEl.textContent = `${filtered.length} items`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 28px 10px; color: #64748b;">
+            <div style="font-size: 30px; margin-bottom: 6px;">🔍</div>
+            <div style="font-weight: 700; font-size: 13px;">No items match "${State.searchQuery}"</div>
+            <div style="font-size: 11px; margin-top: 4px;">Try searching "Milk", "Chips", or "Atta"</div>
+            <button class="btn-action-secondary" onclick="clearSearch()" style="width: auto; margin-top: 10px; padding: 6px 14px; font-size: 11px;">Clear Search</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const inCart = State.cart.find(c => c.id === item.id);
+        const qty = inCart ? inCart.qty : 0;
+
+        return `
+          <div class="product-card" id="card-${item.id}">
+            <span class="badge-tag green" style="align-self: flex-start; margin-bottom: 4px;">${item.badge}</span>
+            <div class="product-thumb">${item.img}</div>
+            <div class="product-brand">${item.cat.toUpperCase()}</div>
+            <div class="product-title" title="${item.name}">${item.name}</div>
+            <div class="product-pack">${item.qtyStr} • Exact Counter MRP</div>
+            
+            <div class="product-footer">
+              <div class="product-price">₹${item.price}</div>
+
+              ${qty === 0 ? `
+                <button class="btn-add" onclick="addToCart('${item.id}', event)">+ ADD</button>
+              ` : `
+                <div class="qty-counter">
+                  <button onclick="decrementCart('${item.id}', event)">−</button>
+                  <span>${qty}</span>
+                  <button onclick="addToCart('${item.id}', event)">+</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addToCart(skuId, event) {
+      if (event) event.stopPropagation();
+      const item = State.catalog.find(p => p.id === skuId);
+      if (!item) return;
+
+      const existing = State.cart.find(c => c.id === skuId);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        State.cart.push({
+          id: item.id,
+          name: `${item.name} ${item.qtyStr}`,
+          price: item.price,
+          qty: 1,
+          img: item.img
+        });
+      }
+      recalcCartTotals();
+      renderProductGrid();
+      renderCartItemsList();
+      showToast('Item Added', `${item.name} added to basket.`);
+    }
+
+    function decrementCart(skuId, event) {
+      if (event) event.stopPropagation();
+      const index = State.cart.findIndex(c => c.id === skuId);
+      if (index === -1) return;
+
+      if (State.cart[index].qty > 1) {
+        State.cart[index].qty -= 1;
+      } else {
+        State.cart.splice(index, 1);
+      }
+      recalcCartTotals();
+      renderProductGrid();
+      renderCartItemsList();
+    }
+
+    function emptyCustomerCart() {
+      State.cart = [];
+      recalcCartTotals();
+      renderProductGrid();
+      renderCartItemsList();
+      showToast('Cart Cleared', 'Basket emptied.');
+    }
+
+    function selectDeliveryTier(tier) {
+      if (tier === 'express') State.tierFee = 19;
+      if (tier === 'standard') State.tierFee = 9;
+      if (tier === 'batched') State.tierFee = 0;
+
+      document.querySelectorAll('#cust-page-cart .store-card').forEach(c => c.classList.remove('selected'));
+      const activeCard = document.getElementById(`tier-${tier}`);
+      if (activeCard) activeCard.classList.add('selected');
+
+      recalcCartTotals();
+    }
+
+    function selectMissingItemPreference(pref) {
+      State.order.missingItemPreference = pref;
+      document.querySelectorAll('.missing-pref-card').forEach(card => card.classList.remove('selected'));
+      const activeCard = document.getElementById(`opt-${pref.replace('_', '-')}`);
+      if (activeCard) activeCard.classList.add('selected');
+      const radio = document.getElementById(`radio-${pref.replace('_', '-')}`);
+      if (radio) radio.checked = true;
+
+      const labels = {
+        instant_refund: '⚡ Instant UPI Refund policy selected',
+        call_replace: '📞 Call & Replace policy selected',
+        cancel_order: '🚫 Cancel Entire Order policy selected'
+      };
+      showToast('Missing SKU Policy', labels[pref] || 'Preference set');
+    }
+
+    function setCustomerRating(stars) {
+      State.order.rating = stars;
+      const msg = document.getElementById('cust-rating-feedback-msg');
+      if (msg) {
+        msg.textContent = `${'⭐'.repeat(stars)} Rated ${stars} Star${stars > 1 ? 's' : ''} • Thank you for supporting local stores!`;
+      }
+      showToast('⭐ Rating Submitted', `Thank you for rating ${stars} stars!`);
+    }
+
+    function renderCustomerTrackingView() {
+      const container = document.getElementById('cust-tracking-dynamic-view');
+      const headerTitle = document.getElementById('cust-tracking-header-title');
+      const trackOrderNum = document.getElementById('track-order-num');
+      if (!container) return;
+
+      if (trackOrderNum) trackOrderNum.textContent = `#${State.order.id}`;
+
+      // STATE A: NO ORDER YET
+      if (State.order.status === 'DRAFT') {
+        if (headerTitle) headerTitle.textContent = 'Live Tracking';
+        container.innerHTML = `
+          <div class="app-card" style="text-align: center; padding: 36px 16px; color: #64748b;">
+            <div style="font-size: 42px; margin-bottom: 8px;">🛒</div>
+            <strong style="color: var(--dark); font-size: 15px; display: block;">No Active Delivery in Progress</strong>
+            <p style="font-size: 11px; margin-top: 5px; line-height: 1.45;">
+              Items added to your basket and paid via fast UPI appear here with live rider corridor tracking.
+            </p>
+            <button class="btn-action-primary" style="margin-top: 14px; width: auto; padding: 8px 18px; font-size: 12px;" onclick="switchCustTab('home')">
+              Browse Stores & Catalog →
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // STATE B: DELIVERED CONFIRMATION (CUSTOMER SUCCESS SCREEN)
+      if (State.order.status === 'DELIVERED') {
+        if (headerTitle) headerTitle.textContent = 'Delivery Confirmation 🎉';
+        container.innerHTML = `
+          <!-- Celebration Banner Card -->
+          <div class="app-card" style="background: linear-gradient(135deg, #059669, #047857); color: #ffffff; text-align: center; padding: 22px 16px; border-radius: var(--radius-lg); box-shadow: 0 10px 25px rgba(5, 150, 105, 0.35);">
+            <div style="font-size: 46px; margin-bottom: 4px;">🎉</div>
+            <span class="badge-tag green" style="background: rgba(255,255,255,0.25); color: #ffffff; margin-bottom: 6px; display: inline-block;">VERIFIED HANDSHAKE COMPLETE</span>
+            <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 6px;">Order Safely Delivered!</h2>
+            <p style="font-size: 12px; opacity: 0.95; line-height: 1.4;">
+              Handed over at your doorstep by <strong>Rajesh Kumar</strong> from <strong>${State.order.storeName}</strong>.
+            </p>
+            <div style="margin-top: 12px; background: rgba(0,0,0,0.18); border-radius: 12px; padding: 8px 12px; display: inline-flex; align-items: center; gap: 8px; font-size: 11px;">
+              <span>🛡️ Tamper Seal: <strong>${State.tamperSealCode}</strong></span>
+              <span style="color: #86efac; font-weight: 800;">● Intact & Verified</span>
+            </div>
+          </div>
+
+          <!-- Itemized Final Delivery Receipt -->
+          <div class="app-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+              <h4 style="font-size: 13px; font-weight: 800;">Itemized Delivery Bill</h4>
+              <span class="badge-tag green">${State.order.isCOD ? 'CASH ON DELIVERY (DOORSTEP)' : 'PAID VIA GOOGLE PAY ✓'}</span>
+            </div>
+
+            <!-- Items Dynamically Rendered from Order Snapshot -->
+            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; margin-bottom: 10px;">
+              ${(State.order.items && State.order.items.length > 0 ? State.order.items : [
+                { id: 'sku-1', name: 'Amul Taaza Milk 500ml', price: 27, qty: 1, img: '🥛' },
+                { id: 'sku-7', name: 'Lay\'s Magic Masala 50g', price: 20, qty: 1, img: '🥔' }
+              ]).map(item => {
+                const isMissingRefunded = State.order.missingSkuHandled && (item.id === 'sku-7' || item.id === 'sku-3' || item.name.toLowerCase().includes('lay'));
+                if (isMissingRefunded) {
+                  return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #fffbeb; border: 1px dashed #fde68a; padding: 6px 8px; border-radius: 8px;">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">${item.img || '🥔'}</span>
+                        <div>
+                          <strong style="color: #92400e;">${item.qty}x ${item.name} (Out of Stock)</strong>
+                          <div style="font-size: 10px; color: #b45309;">⚡ Instant UPI Partial Refund Credited</div>
+                        </div>
+                      </div>
+                      <strong style="color: #166534;">-₹${item.price * item.qty} (Refunded)</strong>
+                    </div>
+                  `;
+                }
+                return `
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="font-size: 20px;">${item.img || '📦'}</span>
+                      <div>
+                        <strong>${item.qty}x ${item.name}</strong>
+                        <div style="font-size: 10px; color: #166534;">Delivered fresh & verified</div>
+                      </div>
+                    </div>
+                    <strong style="color: var(--dark);">₹${item.price * item.qty}</strong>
+                  </div>
+                `;
+              }).join('')}
+
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b;">
+                <span>Delivery Fee (Neighborhood Corridor)</span>
+                <strong>₹${State.order.deliveryFee}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b;">
+                <span>Tamper-Evident Bag & Seal</span>
+                <strong>₹${State.bagFee}</strong>
+              </div>
+            </div>
+
+            <div style="border-top: 1.5px dashed #cbd5e1; padding-top: 10px; display: flex; justify-content: space-between; align-items: baseline;">
+              <div>
+                <strong style="font-size: 13px; color: var(--dark);">Net Amount Charged</strong>
+                <div style="font-size: 10px; color: #64748b;">${State.order.isCOD ? 'Payment Mode: Cash / UPI at Doorstep' : 'Google Pay Txn: UPI/GPAY/LK' + State.order.id}</div>
+              </div>
+              <strong style="font-size: 18px; color: var(--primary);">₹${State.order.total}</strong>
+            </div>
+          </div>
+
+          <!-- Customer Star Rating Experience -->
+          <div class="app-card" style="text-align: center;">
+            <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 4px;">Rate Your Kirana Delivery</h4>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">How was the delivery from ${State.order.storeName} & rider Rajesh?</p>
+            <div style="display: flex; justify-content: center; gap: 10px; font-size: 26px; cursor: pointer; margin-bottom: 8px;">
+              <span onclick="setCustomerRating(1)">⭐</span>
+              <span onclick="setCustomerRating(2)">⭐</span>
+              <span onclick="setCustomerRating(3)">⭐</span>
+              <span onclick="setCustomerRating(4)">⭐</span>
+              <span onclick="setCustomerRating(5)">⭐</span>
+            </div>
+            <div style="font-size: 11px; font-weight: 700; color: #166534;" id="cust-rating-feedback-msg">
+              ⭐⭐⭐⭐⭐ Rated 5 Stars • Fantastic 15-Minute Local Delivery!
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-action-primary" onclick="resetWorkflowState()">
+              🛍️ Shop Again from Local Kirana
+            </button>
+            <button class="btn-action-secondary" onclick="switchCustTab('home')">
+              Return to Home Screen
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // STATE C: ORDER DECLINED & 100% REFUNDED (PHASE 2 STORE REJECTION GATE)
+      if (State.order.status === 'CANCELLED') {
+        if (headerTitle) headerTitle.textContent = 'Order Declined & Refunded';
+        container.innerHTML = `
+          <!-- Decline Alert Card -->
+          <div class="app-card" style="background: #fef2f2; border: 1.5px solid #fecaca; padding: 18px 14px; border-radius: var(--radius-lg);">
+            <div style="text-align: center; margin-bottom: 12px;">
+              <div style="font-size: 38px; margin-bottom: 4px;">🚫</div>
+              <span class="badge-tag red" style="margin-bottom: 6px; display: inline-block;">STORE COULD NOT FULFILL</span>
+              <h3 style="font-size: 16px; font-weight: 900; color: #991b1b; margin-bottom: 4px;">${State.order.storeName} Declined Order</h3>
+              <p style="font-size: 11px; color: #7f1d1d; line-height: 1.45;">
+                Reason: <strong>${State.order.declineReason || 'Physical Counter Stock Depleted'}</strong>.<br>
+                Under our Zero-Downtime Guarantee, 100% of your payment has been automatically refunded to UPI!
+              </p>
+            </div>
+
+            <!-- Instant Full Refund Snapshot Card -->
+            <div style="background: #ffffff; border-radius: 12px; padding: 12px; border: 1.5px dashed #16a34a; text-align: left; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                <span style="font-size: 11px; font-weight: 800; color: #166534;">⚡ 100% FULL UPI REFUND CREDITED</span>
+                <span class="badge-tag green">SETTLED</span>
+              </div>
+              <div style="font-size: 22px; font-weight: 900; color: #059669; margin: 2px 0;">+₹${State.order.total}.00</div>
+              <div style="font-size: 10px; color: #64748b;">
+                Instant UPI Reversal • Ref: <code>${State.order.refundRef || 'UPI-REF-FULL-7731'}</code>
+              </div>
+            </div>
+
+            <!-- Recommended Alternate Kirana Store (1-Click Reorder) -->
+            <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 12px; text-align: left; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">🏪 Recommended Alternate Store</span>
+                <span class="badge-tag blue">IN STOCK</span>
+              </div>
+              <strong style="font-size: 13px; color: var(--dark);">Lakshmi Provision Store</strong>
+              <div style="font-size: 10px; color: #2563eb; margin-top: 1px;">0.8 km away • 4.7★ • Verified physical shelf inventory</div>
+              
+              <button class="btn-action-primary merchant" onclick="reorderWithAlternateStore('lakshmi-store')" style="margin-top: 10px; font-size: 11px; padding: 9px;">
+                🛍️ Reorder with Lakshmi Store (1-Click) →
+              </button>
+            </div>
+
+            <!-- Navigation Actions -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <button class="btn-action-secondary" onclick="switchCustTab('home')" style="font-size: 11px; padding: 8px;">
+                Browse Other Local Stores
+              </button>
+              <button class="btn-action-secondary" onclick="resetWorkflowState()" style="font-size: 10px; padding: 7px; color: #64748b;">
+                Restart Demo Flow ↻
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // STATE D: ACTIVE DISPATCH & TRANSIT
+      if (headerTitle) headerTitle.textContent = 'Live Order Dispatch';
+      
+      let statusTitle = 'Order Confirmed & Sent to Store';
+      let statusSub = 'Kirana store received your order. Confirming shelf inventory.';
+      let statusPill = 'Order Received';
+      if (State.order.status === 'PREPARING') {
+        statusPill = 'Packing at Store';
+        statusTitle = 'Store is Packing Shelf Items';
+        statusSub = 'Sharma Kirana is picking your items with 4-unit cushion protection.';
+      } else if (State.order.status === 'PACKED' || State.order.status === 'TRIP_ASSIGNED') {
+        statusPill = 'Bag Sealed';
+        statusTitle = 'Bag Sealed & Awaiting Pickup';
+        statusSub = `Security seal ${State.tamperSealCode} applied. Rider arriving at store.`;
+      } else if (State.order.status === 'OUT_FOR_DELIVERY') {
+        statusPill = 'Out for Delivery';
+        statusTitle = 'Rider En Route to Your Doorstep';
+        statusSub = 'Rajesh Kumar has verified bag seal and is on his EV scooter.';
+      }
+
+      container.innerHTML = `
+        <!-- Status Card -->
+        <div class="app-card" style="background: #0f172a; color: #ffffff; border-radius: var(--radius-lg);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="badge-tag green" style="background: #10b981; color: #ffffff; text-transform: uppercase;">${statusPill}</span>
+            <span style="font-size: 11px; color: #94a3b8;">Active</span>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 900; margin-bottom: 4px;">${statusTitle}</h3>
+          <p style="font-size: 11px; color: #cbd5e1; line-height: 1.4;">
+            ${statusSub}
+          </p>
+        </div>
+
+        <!-- Realistic Simulated Live Road Map -->
+        <div class="app-card" style="padding: 10px;">
+          <div class="simulated-map" id="simulated-map-container">
+            <!-- Store Node Pin -->
+            <div class="map-node-pin store-node">
+              <span style="font-size: 24px;">🏪</span>
+              <span class="map-node-label">Store</span>
+            </div>
+
+            <!-- Road Corridor Lines -->
+            <div class="map-route-base"></div>
+            <div class="map-route-traveled" id="map-route-traveled" style="width: ${Math.max(0, State.order.gpsProgressPercent - 10)}%;"></div>
+
+            <!-- Moving Rider Scooter Marker with Radar Pulse -->
+            <div class="map-rider-marker" id="live-map-rider" style="left: ${State.order.gpsProgressPercent}%;">
+              <span>🛵</span>
+              <div class="rider-radar-ring"></div>
+            </div>
+
+            <!-- Customer Destination Pin -->
+            <div class="map-node-pin home-node">
+              <span style="font-size: 24px;">🏠</span>
+              <span class="map-node-label">You</span>
+            </div>
+          </div>
+
+          <!-- Real-Time Corridor Telemetry Bar -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center;">
+            <div style="background: #f8fafc; padding: 6px; border-radius: 8px; border: 1px solid #f1f5f9;">
+              <span style="font-size: 9px; color: #64748b; font-weight: 800;">LIVE ETA</span>
+              <strong style="font-size: 13px; color: #059669; display: block;" id="live-track-eta">${State.order.etaMinutes} Mins</strong>
+            </div>
+            <div style="background: #f8fafc; padding: 6px; border-radius: 8px; border: 1px solid #f1f5f9;">
+              <span style="font-size: 9px; color: #64748b; font-weight: 800;">GPS TELEMETRY</span>
+              <strong style="font-size: 10px; color: var(--dark); display: block; font-family: 'JetBrains Mono', monospace;" id="live-track-coords">${State.gps.lat.toFixed(3)}°N, ${State.gps.lng.toFixed(3)}°E</strong>
+            </div>
+            <div style="background: #f8fafc; padding: 6px; border-radius: 8px; border: 1px solid #f1f5f9;">
+              <span style="font-size: 9px; color: #64748b; font-weight: 800;">SPEED / BEARING</span>
+              <strong style="font-size: 11px; color: #2563eb; display: block;" id="live-track-speed">24 km/h • NE 42°</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Refund Card (Phase 4 Sequence Diagram) -->
+        ${State.order.missingSkuHandled ? `
+          <div class="app-card" style="background: #fffbeb; border: 1.5px solid #fde68a;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <strong style="color: #92400e; font-size: 12px;">⚡ Instant UPI Partial Refund Credited!</strong>
+              <span class="badge-tag orange" style="font-size: 9px;">UPI-REF-4821</span>
+            </div>
+            <p style="font-size: 11px; color: #78350f; line-height: 1.35; margin-bottom: 6px;">
+              Store was out of Lay's Magic Masala 50g. As per your pre-set policy, ₹20 was instantly credited back to your UPI!
+            </p>
+            <div style="background: #ffffff; border: 1px solid #fde68a; border-radius: 8px; padding: 6px 10px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 700;">
+              <span>🥔 Lay's Magic Masala 50g</span>
+              <span style="color: #166534;">+₹20 Refunded to UPI</span>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Tamper Seal & OTP Handshake Card -->
+        <div class="app-card">
+          <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 4px;">🛡️ Tamper-Evident Security Seal</h4>
+          <div style="background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 8px; padding: 8px; text-align: center; margin: 6px 0;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 800; color: var(--primary-dark);">
+              ${State.tamperSealCode}
+            </div>
+          </div>
+
+          <!-- Delivery Handshake OTP -->
+          <div style="background: #f0fdf4; border: 2px dashed #16a34a; border-radius: 10px; padding: 10px; text-align: center; margin-top: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #166534; text-transform: uppercase;">Delivery Handshake OTP</div>
+            <div style="font-size: 26px; font-weight: 900; letter-spacing: 5px; color: #15803d; font-family: 'JetBrains Mono', monospace; margin: 3px 0;">${State.handshakeOTP}</div>
+            <p style="font-size: 10px; color: #64748b;">Share with rider Rajesh Kumar upon verifying bag seal at doorstep.</p>
+          </div>
+
+          <!-- Quick Switch to Rider to Complete Handshake -->
+          <button class="btn-action-primary rider" onclick="setAppRole('rider')" style="margin-top: 10px; font-size: 11px; padding: 10px; width: 100%;">
+            🛵 Rajesh Kumar at Doorstep → Switch to Rider to Enter OTP
+          </button>
+        </div>
+      `;
+    }
+
+    function recalcCartTotals() {
+      let subtotal = 0;
+      let count = 0;
+      State.cart.forEach(item => {
+        subtotal += (item.price * item.qty);
+        count += item.qty;
+      });
+
+      const delivery = State.tierFee;
+      const total = subtotal + delivery + (count > 0 ? State.bagFee : 0);
+
+      // Nav Badge
+      const navBadge = document.getElementById('cust-nav-badge');
+      if (navBadge) {
+        navBadge.textContent = count;
+        navBadge.style.display = count > 0 ? 'flex' : 'none';
+      }
+
+      // Floating Cart Bar
+      const floatCart = document.getElementById('cust-float-cart');
+      if (floatCart) {
+        floatCart.style.display = (count > 0 && State.custTab !== 'cart') ? 'flex' : 'none';
+        const cntEl = document.getElementById('float-cart-count');
+        const totEl = document.getElementById('float-cart-total');
+        if (cntEl) cntEl.textContent = `${count} item${count > 1 ? 's' : ''}`;
+        if (totEl) totEl.textContent = `₹${total}`;
+      }
+
+      // Bill Elements
+      const elSubtotal = document.getElementById('bill-subtotal');
+      if (elSubtotal) elSubtotal.textContent = `₹${subtotal}`;
+      const elDelivery = document.getElementById('bill-delivery');
+      if (elDelivery) elDelivery.textContent = `₹${delivery}`;
+      const elTotal = document.getElementById('bill-total');
+      if (elTotal) elTotal.textContent = `₹${total}`;
+      const btnPay = document.getElementById('btn-pay-amount-label');
+      if (btnPay) btnPay.textContent = `₹${total}`;
+      const modalPay = document.getElementById('modal-pay-amount');
+      if (modalPay) modalPay.textContent = `₹${total}`;
+      const modalBtn = document.getElementById('modal-btn-pay-amount');
+      if (modalBtn) modalBtn.textContent = `₹${total}`;
+
+      State.order.subtotal = subtotal;
+      State.order.deliveryFee = delivery;
+      State.order.total = total;
+    }
+
+    function renderCartItemsList() {
+      const cartList = document.getElementById('cart-items-list');
+      if (!cartList) return;
+
+      if (State.cart.length === 0) {
+        cartList.innerHTML = `
+          <div style="text-align: center; padding: 24px; color: #94a3b8;">
+            <div style="font-size: 32px; margin-bottom: 6px;">🛒</div>
+            <strong style="color: var(--dark); font-size: 13px;">Your cart is empty</strong>
+            <div style="font-size: 11px; margin-top: 4px;">Explore daily essentials at physical store prices</div>
+            <button class="btn-action-primary" style="margin-top: 12px; width: auto; padding: 6px 14px; font-size: 11px;" onclick="switchCustTab('home')">Browse Stores</button>
+          </div>
+        `;
+      } else {
+        cartList.innerHTML = State.cart.map(item => `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 24px;">${item.img}</span>
+              <div>
+                <strong style="font-size: 12px; color: var(--dark);">${item.name}</strong>
+                <div style="font-size: 10px; color: #64748b;">Direct Counter MRP: ₹${item.price}</div>
+              </div>
+            </div>
+            <div class="qty-counter">
+              <button onclick="decrementCart('${item.id}', event)">−</button>
+              <span>${item.qty}</span>
+              <button onclick="addToCart('${item.id}', event)">+</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderCustomerView() {
+      renderCategoryChips();
+      renderStoreCards();
+      renderProductGrid();
+      renderCartItemsList();
+      recalcCartTotals();
+      renderCustomerTrackingView();
+
+      // Render Past Orders Tab
+      const pastList = document.getElementById('past-orders-list');
+      if (pastList) {
+        pastList.innerHTML = State.pastOrders.map(po => `
+          <div class="app-card" style="margin: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <strong style="font-size: 12px; color: var(--dark);">${po.id}</strong>
+              <span class="badge-tag green">${po.status}</span>
+            </div>
+            <div style="font-size: 11px; color: #64748b; margin-bottom: 4px;">${po.date} • Sharma General Store</div>
+            <div style="font-size: 11px; color: var(--dark); line-height: 1.3;">${po.items}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 6px; border-top: 1px solid #f1f5f9;">
+              <strong style="font-size: 13px; color: var(--dark);">₹${po.total}</strong>
+              <button class="btn-action-secondary" style="width: auto; padding: 3px 10px; font-size: 10px;" onclick="showToast('Items Added', 'Reordered items loaded into basket.')">Reorder ↺</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    /* ========================================================
+       7. PAYMENT & OPERATIONAL WORKFLOW PIPELINE
+       ======================================================== */
+    function updatePaymentMethodSelection() {
+      const mode = document.querySelector('input[name="payment_mode"]:checked')?.value || 'gpay';
+      const gpayLabel = document.getElementById('pay-opt-gpay-label');
+      const codLabel = document.getElementById('pay-opt-cod-label');
+      const btn = document.getElementById('btn-modal-confirm-pay');
+      if (gpayLabel && codLabel) {
+        if (mode === 'cod') {
+          codLabel.style.borderColor = '#059669';
+          gpayLabel.style.borderColor = '#e2e8f0';
+          if (btn) btn.innerHTML = `Place COD Order (<span id="modal-btn-pay-amount">₹${State.order.total}</span>) 📦`;
+        } else {
+          gpayLabel.style.borderColor = '#059669';
+          codLabel.style.borderColor = '#e2e8f0';
+          if (btn) btn.innerHTML = `Pay with Google Pay (<span id="modal-btn-pay-amount">₹${State.order.total}</span>) 🔒`;
+        }
+      }
+    }
+
+    function openPaymentDrawer() {
+      if (State.cart.length === 0) {
+        alert('Your cart is empty! Please add groceries from a local store first.');
+        return;
+      }
+      recalcCartTotals();
+      updatePaymentMethodSelection();
+      document.getElementById('payment-modal-backdrop').style.display = 'flex';
+    }
+
+    function closePaymentDrawer() {
+      document.getElementById('payment-modal-backdrop').style.display = 'none';
+    }
+
+    function processAtomicUPIPayment() {
+      const mode = document.querySelector('input[name="payment_mode"]:checked')?.value || 'gpay';
+      State.order.paymentMode = (mode === 'cod') ? 'COD' : 'Google Pay';
+      State.order.isCOD = (mode === 'cod');
+      closePaymentDrawer();
+
+      if (mode === 'cod') {
+        showToast('📦 Placing COD Order...', 'Order booked! Pay cash or scan QR at doorstep.');
+      } else {
+        showToast('Processing Google Pay...', 'Authorizing instant settlement with Kirana counter');
+      }
+
+      setTimeout(() => {
+        State.order.status = 'PLACED';
+        State.order.merchantTimerSeconds = 120;
+        State.order.missingSkuHandled = false;
+        State.order.refundAmount = 0;
+        State.order.declineReason = null;
+        State.workflowStep = 2;
+        updateStepperUI();
+
+        // 1. Snapshot ordered items for delivery receipt and tracking
+        State.order.items = JSON.parse(JSON.stringify(State.cart));
+        
+        // 2. Clear cart immediately upon placing order so no items linger in cart
+        State.cart = [];
+        recalcCartTotals();
+        renderCartItemsList();
+        renderProductGrid();
+
+        // Pulsing alert on Merchant role
+        const merchDot = document.getElementById('dot-merchant-alert');
+        if (merchDot) merchDot.style.display = 'block';
+
+        playBeepSound();
+
+        // Ensure customer tracking screen is initialized in background
+        switchCustTab('tracking');
+        renderCustomerView();
+        renderMerchantView();
+        renderRiderView();
+
+        // DYNAMIC GUIDED NAVIGATION: Automatically switch to Merchant role to make decision
+        setAppRole('merchant');
+        showToast('🔔 Order Sent to Store!', 'Sharma Kirana POS ringing. 120s decision window started.', 'merchant');
+      }, 600);
+    }
+
+    let merchantCountdown = null;
+    function startMerchantTimer() {
+      if (merchantCountdown) clearInterval(merchantCountdown);
+      merchantCountdown = setInterval(() => {
+        if (State.order.status === 'PLACED') {
+          if (State.order.merchantTimerSeconds > 0) {
+            State.order.merchantTimerSeconds -= 1;
+            const display = document.getElementById('merch-timer-display');
+            if (display) {
+              display.textContent = `${State.order.merchantTimerSeconds}s`;
+              if (State.order.merchantTimerSeconds <= 30) display.style.color = '#ef4444';
+            }
+          } else {
+            // 120s Timeout elapsed! Auto-decline and refund customer per UML sequence diagram
+            clearInterval(merchantCountdown);
+            merchantConfirmDecline('120-Second Decision Window Timed Out (Store Unresponsive)');
+          }
+        }
+      }, 1000);
+    }
+
+    function merchantAcceptOrder() {
+      if (merchantCountdown) clearInterval(merchantCountdown);
+      State.order.status = 'PREPARING';
+      State.workflowStep = 3;
+      updateStepperUI();
+
+      const riderDot = document.getElementById('dot-rider-alert');
+      if (riderDot) riderDot.style.display = 'block';
+
+      showToast('Order Accepted by Store', 'Check items off physical shelf & apply tamper seal LK-SEAL-8821.', 'merchant');
+      renderMerchantView();
+      renderCustomerView();
+      renderRiderView();
+    }
+
+    function openDeclineModal() {
+      const modal = document.getElementById('decline-modal-backdrop');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeDeclineModal() {
+      const modal = document.getElementById('decline-modal-backdrop');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function submitMerchantDecline() {
+      const radios = document.getElementsByName('decline-reason');
+      let reason = 'Physical Counter Stock Depleted';
+      for (const r of radios) {
+        if (r.checked) {
+          reason = r.value;
+          break;
+        }
+      }
+      closeDeclineModal();
+      merchantConfirmDecline(reason);
+    }
+
+    function merchantConfirmDecline(reason) {
+      if (merchantCountdown) clearInterval(merchantCountdown);
+      State.order.status = 'CANCELLED';
+      State.order.declineReason = reason || 'Physical Counter Stock Depleted';
+      State.order.refundRef = 'UPI-REF-FULL-' + Math.floor(1000 + Math.random() * 9000);
+      State.workflowStep = 1;
+      updateStepperUI();
+      playBeepSound();
+
+      renderMerchantView();
+      renderRiderView();
+      renderCustomerView();
+
+      // DYNAMIC GUIDED NAVIGATION: Automatically switch to Customer Tracking View
+      setTimeout(() => {
+        setAppRole('customer');
+        switchCustTab('tracking');
+        showToast('🚫 Order Declined & 100% Refunded', `₹${State.order.total}.00 instantly credited to customer UPI.`, 'customer');
+      }, 600);
+    }
+
+    function reorderWithAlternateStore(storeId) {
+      selectStore(storeId || 'lakshmi-store');
+      
+      // Restore items from order snapshot into active basket
+      if (State.order.items && State.order.items.length > 0) {
+        State.cart = JSON.parse(JSON.stringify(State.order.items));
+      } else {
+        State.cart = [
+          { id: 'sku-1', name: 'Amul Taaza Milk 500ml', price: 27, qty: 1, img: '🥛' },
+          { id: 'sku-7', name: 'Lay\'s Magic Masala 50g', price: 20, qty: 1, img: '🥔' }
+        ];
+      }
+      
+      State.order.status = 'DRAFT';
+      State.order.declineReason = null;
+      State.workflowStep = 1;
+
+      recalcCartTotals();
+      renderCartItemsList();
+      renderProductGrid();
+      updateStepperUI();
+
+      setAppRole('customer');
+      switchCustTab('cart');
+      showToast('Switched Store!', `Selected ${State.order.storeName}. Review basket & checkout.`);
+    }
+
+    function merchantRejectOrder() {
+      openDeclineModal();
+    }
+
+    function merchantCompletePacking() {
+      State.order.status = 'PACKED';
+      State.workflowStep = 4;
+      updateStepperUI();
+
+      renderMerchantView();
+      renderRiderView();
+      renderCustomerView();
+
+      // DYNAMIC GUIDED NAVIGATION: Automatically switch to Rider role
+      setTimeout(() => {
+        setAppRole('rider');
+        showToast('📦 Bag Sealed LK-SEAL-8821', 'Switched to Rider App: Trip offer ready for pickup!', 'rider');
+      }, 500);
+    }
+
+    function riderAcceptTrip() {
+      State.order.status = 'TRIP_ASSIGNED';
+      State.workflowStep = 4;
+      updateStepperUI();
+
+      showToast('Trip Assigned to Rajesh Kumar', 'Proceed to Kirana counter for bag inspection.');
+      renderRiderView();
+      renderCustomerView();
+      renderMerchantView();
+    }
+
+    function simulateMissingSKUAudit() {
+      State.order.missingSkuHandled = true;
+      State.workflowStep = 5;
+      updateStepperUI();
+      playBeepSound();
+
+      if (State.order.missingItemPreference === 'instant_refund') {
+        State.order.refundAmount = 20;
+        State.order.total = Math.max(0, State.order.total - 20);
+        showToast('⚡ Instant UPI Partial Refund', '₹20 automatically credited back to customer UPI for missing chips.', 'customer');
+      } else if (State.order.missingItemPreference === 'call_replace') {
+        showToast('📞 Call & Replace Protocol', 'Store merchant called Rahul Verma to confirm Kurkure substitute.', 'customer');
+      } else if (State.order.missingItemPreference === 'cancel_order') {
+        State.order.status = 'CANCELLED';
+        State.order.declineReason = 'Missing SKU detected; customer pre-set cancellation';
+        State.order.refundRef = 'UPI-REF-FULL-' + Math.floor(1000 + Math.random() * 9000);
+        showToast('🚫 Order Cancelled & Full Refund', 'Missing SKU detected; customer pre-set cancellation.', 'customer');
+        setAppRole('customer');
+        switchCustTab('tracking');
+        renderCustomerView();
+        return;
+      }
+
+      renderRiderView();
+      renderCustomerView();
+      renderMerchantView();
+    }
+
+    function riderConfirmSealAndDepart() {
+      State.order.status = 'OUT_FOR_DELIVERY';
+      State.order.gpsProgressPercent = 35;
+      State.order.etaMinutes = 11;
+      State.workflowStep = 6;
+      updateStepperUI();
+
+      startLiveGpsTelemetry();
+      renderRiderView();
+      renderCustomerView();
+      renderMerchantView();
+
+      // DYNAMIC GUIDED NAVIGATION: Automatically switch to Customer view so customer tracks rider and gets Handshake OTP!
+      setTimeout(() => {
+        setAppRole('customer');
+        switchCustTab('tracking');
+        showToast('🛵 Rider En Route!', 'Switched to Live Tracking: watch rider corridor & get Handshake OTP ' + State.handshakeOTP, 'customer');
+      }, 500);
+    }
+
+    let gpsTimer = null;
+    function startLiveGpsTelemetry() {
+      if (gpsTimer) clearInterval(gpsTimer);
+      gpsTimer = setInterval(() => {
+        if (State.order.status === 'OUT_FOR_DELIVERY') {
+          if (State.order.gpsProgressPercent < 88) {
+            State.order.gpsProgressPercent += 6;
+            if (State.order.gpsProgressPercent > 88) State.order.gpsProgressPercent = 88;
+            
+            State.order.etaMinutes = Math.max(1, Math.round(14 * (1 - State.order.gpsProgressPercent / 100)));
+
+            const marker = document.getElementById('live-map-rider');
+            if (marker) marker.style.left = `${State.order.gpsProgressPercent}%`;
+
+            const routeTraveled = document.getElementById('map-route-traveled');
+            if (routeTraveled) routeTraveled.style.width = `${Math.max(0, State.order.gpsProgressPercent - 10)}%`;
+
+            const etaEl = document.getElementById('live-track-eta');
+            if (etaEl) etaEl.textContent = `${State.order.etaMinutes} Mins`;
+
+            const currentLat = (State.gps.lat + (State.order.gpsProgressPercent * 0.00008)).toFixed(4);
+            const currentLng = (State.gps.lng + (State.order.gpsProgressPercent * 0.00012)).toFixed(4);
+            const coordsEl = document.getElementById('live-track-coords');
+            if (coordsEl) coordsEl.textContent = `${currentLat}°N, ${currentLng}°E`;
+
+            const speedEl = document.getElementById('live-track-speed');
+            if (speedEl) {
+              const speed = Math.floor(22 + Math.random() * 5);
+              speedEl.textContent = `${speed} km/h • NE 42°`;
+            }
+          }
+        }
+      }, 1400);
+    }
+
+    function riderArriveAtDoorstep() {
+      State.order.gpsProgressPercent = 94;
+      State.order.etaMinutes = 1;
+      showToast('Arrived at Doorstep!', 'Ask customer Rahul Verma for 4-digit Handshake OTP.');
+      renderRiderView();
+      renderCustomerView();
+    }
+
+    function riderVerifyOtpAndComplete() {
+      if (State.order.status === 'DELIVERED') {
+        return; // Already completed safely
+      }
+
+      const input = document.getElementById('rider-otp-input');
+      const val = input ? input.value.trim() : State.handshakeOTP;
+
+      if (val !== State.handshakeOTP) {
+        alert(`Incorrect OTP! Customer's Handshake OTP is ${State.handshakeOTP}. Please enter 4821 to complete verification.`);
+        return;
+      }
+
+      State.order.status = 'DELIVERED';
+      State.workflowStep = 8;
+      updateStepperUI();
+
+      playBeepSound();
+      showToast('🎉 Order Safely Delivered!', 'Cryptographic handshake validated. Payout released to rider Rajesh Kumar.');
+      
+      renderRiderView();
+      renderMerchantView();
+      renderCustomerView();
+
+      // Automatically switch to Customer Tracking View so customer sees the Delivery Confirmation Card!
+      setTimeout(() => {
+        setAppRole('customer');
+        switchCustTab('tracking');
+      }, 1000);
+    }
+
+    /* ========================================================
+       8. WORKFLOW STEPPER CONTROLLER
+       ======================================================== */
+    const stepperSteps = [
+      { step: 1, label: 'Step 1: Order', role: 'customer' },
+      { step: 2, label: 'Step 2: Store Alert', role: 'merchant' },
+      { step: 3, label: 'Step 3: Pack & Seal', role: 'merchant' },
+      { step: 4, label: 'Step 4: Dispatch', role: 'rider' },
+      { step: 5, label: 'Step 5: Item Refund', role: 'rider' },
+      { step: 6, label: 'Step 6: Transit', role: 'customer' },
+      { step: 7, label: 'Step 7: Handshake', role: 'rider' },
+      { step: 8, label: 'Completed 🎉', role: 'customer' }
+    ];
+
+    function updateStepperUI() {
+      const current = stepperSteps.find(s => s.step === State.workflowStep) || stepperSteps[0];
+      const stepNumEl = document.getElementById('stepper-step-num');
+      const nextBtn = document.getElementById('btn-next-step');
+
+      if (State.order.status === 'CANCELLED') {
+        if (stepNumEl) stepNumEl.textContent = 'Declined ✕';
+        if (nextBtn) {
+          nextBtn.innerHTML = '<span>Declined ↻</span>';
+          nextBtn.style.background = '#dc2626';
+          nextBtn.style.color = '#ffffff';
+          nextBtn.title = 'Order declined by store. Click to restart from Step 1';
+        }
+      } else if (State.order.status === 'DELIVERED' || State.workflowStep >= 8) {
+        if (stepNumEl) stepNumEl.textContent = 'Delivered ✓';
+        if (nextBtn) {
+          nextBtn.innerHTML = '<span>Restart ↻</span>';
+          nextBtn.style.background = '#047857';
+          nextBtn.style.color = '#ffffff';
+          nextBtn.title = 'Click to Restart Tour Walkthrough';
+        }
+      } else {
+        if (stepNumEl) stepNumEl.textContent = current.label;
+        if (nextBtn) {
+          nextBtn.innerHTML = `<span>${current.label}</span> ⏩`;
+          nextBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+          nextBtn.style.color = '#34d399';
+          nextBtn.title = 'Advance Workflow Step';
+        }
+      }
+    }
+
+    function stepForwardWorkflow() {
+      if (State.order.status === 'DELIVERED' || State.workflowStep >= 8 || State.order.status === 'CANCELLED') {
+        showToast('🔄 Restarting Demo', 'Starting fresh tour walkthrough from Step 1');
+        resetWorkflowState();
+        return;
+      }
+
+      if (State.workflowStep === 1) {
+        setAppRole('customer');
+        switchCustTab('cart');
+        setTimeout(() => {
+          processAtomicUPIPayment();
+        }, 400);
+      } else if (State.workflowStep === 2) {
+        setAppRole('merchant');
+        setTimeout(() => {
+          merchantAcceptOrder();
+        }, 400);
+      } else if (State.workflowStep === 3) {
+        setAppRole('merchant');
+        setTimeout(() => {
+          merchantCompletePacking();
+        }, 400);
+      } else if (State.workflowStep === 4) {
+        setAppRole('rider');
+        setTimeout(() => {
+          riderAcceptTrip();
+        }, 400);
+      } else if (State.workflowStep === 5) {
+        setAppRole('rider');
+        setTimeout(() => {
+          simulateMissingSKUAudit();
+        }, 400);
+      } else if (State.workflowStep === 6) {
+        riderConfirmSealAndDepart();
+      } else if (State.workflowStep === 7) {
+        setAppRole('rider');
+        setTimeout(() => {
+          const otpIn = document.getElementById('rider-otp-input');
+          if (otpIn) otpIn.value = '4821';
+          riderVerifyOtpAndComplete();
+        }, 400);
+      }
+    }
+
+    function resetWorkflowState() {
+      if (merchantCountdown) clearInterval(merchantCountdown);
+      if (gpsTimer) clearInterval(gpsTimer);
+      State.workflowStep = 1;
+      State.order.status = 'DRAFT';
+      State.order.total = 61;
+      State.order.subtotal = 47;
+      State.order.deliveryFee = State.tierFee || 9;
+      State.order.bagFee = 5;
+      State.order.missingSkuHandled = false;
+      State.order.missingItemPreference = 'instant_refund';
+      State.order.refundAmount = 0;
+      State.order.declineReason = null;
+      State.order.gpsProgressPercent = 35;
+      State.order.etaMinutes = 14;
+      State.order.rating = 5;
+      State.order.paymentMode = 'Google Pay';
+      State.order.isCOD = false;
+      State.cart = [
+        { id: 'sku-1', name: 'Amul Taaza Milk 500ml', price: 27, qty: 1, img: '🥛' },
+        { id: 'sku-7', name: 'Lay\'s Magic Masala 50g', price: 20, qty: 1, img: '🥔' }
+      ];
+
+      setAppRole('customer');
+      switchCustTab('home');
+      recalcCartTotals();
+      updateStepperUI();
+      renderCustomerView();
+      renderMerchantView();
+      renderRiderView();
+      showToast('Demo Reset Complete', 'Ready to walk through again from Step 1.');
+    }
+
+    /* ========================================================
+       9. ROLE VIEW RENDERERS (MERCHANT & RIDER)
+       ======================================================== */
+    function renderMerchantView() {
+      const activeBox = document.getElementById('merch-active-order-box');
+      if (!activeBox) return;
+
+      if (State.order.status === 'CANCELLED') {
+        activeBox.innerHTML = `
+          <div style="border: 2px solid #ef4444; background: #fef2f2; border-radius: 14px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-tag red" style="background: #dc2626; color: white;">ORDER DECLINED</span>
+              <span style="font-size: 10px; color: #991b1b; font-weight: 700;">100% Refunded</span>
+            </div>
+            <div style="font-size: 13px; font-weight: 800; color: #991b1b;">Order ${State.order.id} Rejected by Counter</div>
+            <div style="font-size: 11px; color: #7f1d1d; margin-top: 3px;">
+              Reason: <strong>${State.order.declineReason || 'Physical Counter Out of Stock'}</strong>
+            </div>
+            <div style="background: white; border-radius: 8px; padding: 8px; margin: 8px 0; border: 1px solid #fecaca; font-size: 10px; color: #475569;">
+              💸 ₹${State.order.total}.00 full UPI refund credited to customer Rahul Verma.<br>
+              Ref: <code>${State.order.refundRef || 'UPI-REF-FULL-7731'}</code>
+            </div>
+            <div style="display: flex; gap: 6px; margin-top: 6px;">
+              <button class="btn-action-secondary" onclick="resetWorkflowState()" style="flex: 1; font-size: 10px; padding: 7px; color: #dc2626; border-color: #fca5a5;">
+                Reset POS Queue ↻
+              </button>
+              <button class="btn-action-primary" onclick="setAppRole('customer'); switchCustTab('tracking');" style="flex: 1; font-size: 10px; padding: 7px; background: #059669;">
+                View Customer Side →
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (State.order.status === 'DRAFT') {
+        activeBox.innerHTML = `
+          <div style="text-align: center; padding: 22px 10px; color: #64748b;">
+            <div style="font-size: 30px; margin-bottom: 6px;">🏪</div>
+            <strong style="color: var(--dark); display: block; font-size: 13px;">No Active Orders in Queue</strong>
+            <div style="font-size: 11px; margin-top: 4px;">Orders placed by local customers ring here in real-time.</div>
+          </div>
+        `;
+      } else if (State.order.status === 'PLACED') {
+        startMerchantTimer();
+        activeBox.innerHTML = `
+          <div style="border: 2px solid #2563eb; background: #eff6ff; border-radius: 14px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-tag blue" style="background: #2563eb; color: white;">NEW INCOMING ORDER</span>
+              <div style="font-weight: 900; font-size: 13px; color: #2563eb;">
+                ⏱ <span id="merch-timer-display">${State.order.merchantTimerSeconds}s</span>
+              </div>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 800; color: #0f172a;">${State.order.id} • Rahul Verma</div>
+            <div style="font-size: 10px; color: #64748b; margin-top: 1px;">${State.order.deliveryAddress}</div>
+
+            <div style="background: white; border-radius: 10px; padding: 8px; margin: 8px 0; border: 1px solid #dbeafe;">
+              <div style="font-size: 10px; font-weight: 700; color: #3b82f6; margin-bottom: 4px;">ITEMS TO PICK:</div>
+              <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span>1x Amul Taaza Milk 500ml</span>
+                  <strong>₹27</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span>1x Lay's Magic Masala 50g</span>
+                  <strong>₹20</strong>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 6px; margin-top: 8px;">
+              <button class="btn-action-primary merchant" onclick="merchantAcceptOrder()" style="flex: 2; padding: 10px; font-size: 12px;">
+                ✓ Accept & Pack Order
+              </button>
+              <button class="btn-action-secondary" onclick="openDeclineModal()" style="flex: 1; padding: 10px; font-size: 11px; color: #dc2626; border-color: #fca5a5;">
+                ✕ Decline
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (State.order.status === 'PREPARING') {
+        activeBox.innerHTML = `
+          <div style="border: 1.5px solid #93c5fd; background: #f8fafc; border-radius: 14px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-tag blue">PACKING IN PROGRESS</span>
+              <span style="font-size: 10px; font-weight: 700; color: #64748b;">${State.order.id}</span>
+            </div>
+
+            <div style="font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 6px;">Shelf Checklist:</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer;">
+                <input type="checkbox" checked style="accent-color: #2563eb; width: 15px; height: 15px;">
+                <span>Amul Taaza Milk 500ml (Checked from chiller)</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer;">
+                <input type="checkbox" checked style="accent-color: #2563eb; width: 15px; height: 15px;">
+                <span>Lay's Magic Masala 50g (Checked from snack rack)</span>
+              </label>
+            </div>
+
+            <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; font-size: 10px; color: #92400e; margin-bottom: 10px;">
+              🔒 <strong>Tamper Seal Serial:</strong> ${State.tamperSealCode}
+            </div>
+
+            <button class="btn-action-primary merchant" onclick="merchantCompletePacking()">
+              Complete Packing & Seal Bag →
+            </button>
+          </div>
+        `;
+      } else if (State.order.status === 'PACKED' || State.order.status === 'TRIP_ASSIGNED') {
+        activeBox.innerHTML = `
+          <div class="app-card" style="margin: 0; background: #eff6ff; border-color: #bfdbfe;">
+            <span class="badge-tag blue" style="margin-bottom: 6px; display: inline-block;">READY AT STORE COUNTER</span>
+            <div style="font-size: 13px; font-weight: 800;">Awaiting Rider Rajesh Kumar</div>
+            <p style="font-size: 11px; color: #1e40af; margin-top: 2px;">
+              Bag packed and sealed with sticker <strong>${State.tamperSealCode}</strong>.
+            </p>
+          </div>
+        `;
+      } else {
+        activeBox.innerHTML = `
+          <div class="app-card" style="margin: 0; background: #f0fdf4; border-color: #bbf7d0;">
+            <span class="badge-tag green" style="margin-bottom: 4px; display: inline-block;">ORDER HANDED OVER</span>
+            <div style="font-size: 13px; font-weight: 800; color: #166534;">Dispatched via Rider</div>
+            <p style="font-size: 11px; color: #15803d; margin-top: 2px;">Delivery completed safely via neighborhood corridor.</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderRiderView() {
+      const jobBox = document.getElementById('rider-active-job-box');
+      if (!jobBox) return;
+
+      if (State.order.status === 'DRAFT' || State.order.status === 'CANCELLED') {
+        jobBox.innerHTML = `
+          <div style="text-align: center; padding: 22px 10px; color: #64748b;">
+            <div style="font-size: 30px; margin-bottom: 6px;">🛵</div>
+            <strong style="color: var(--dark); display: block; font-size: 13px;">Waiting for Local Trip Dispatch</strong>
+            <div style="font-size: 11px; margin-top: 4px;">Orders placed in Ward 4 appear on this dispatch board.</div>
+          </div>
+        `;
+      } else if (State.order.status === 'PLACED' || State.order.status === 'PREPARING') {
+        jobBox.innerHTML = `
+          <div class="app-card" style="border: 2px solid #ea580c; background: #fff7ed; margin: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-tag orange" style="background: #ea580c; color: white;">NEW TRIP OFFER</span>
+              <span style="font-weight: 800; color: #ea580c; font-size: 12px;">Payout: ₹38</span>
+            </div>
+            <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${State.order.storeName} → Indiranagar</div>
+            <div style="font-size: 10px; color: #7c2d12; margin-top: 2px;">Distance: 1.1km • Batched Ward 4 Route</div>
+
+            <button class="btn-action-primary rider" onclick="riderAcceptTrip()" style="margin-top: 10px;">
+              ✓ Accept Trip (₹38 Guaranteed)
+            </button>
+          </div>
+        `;
+      } else if (State.order.status === 'TRIP_ASSIGNED' || State.order.status === 'PACKED') {
+        jobBox.innerHTML = `
+          <div class="app-card" style="margin: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-tag orange">AT STORE COUNTER</span>
+              <span style="font-size: 10px; font-weight: 700; color: #64748b;">${State.order.id}</span>
+            </div>
+            
+            <div style="font-size: 13px; font-weight: 800;">Counter Inspection & Audit</div>
+            <div style="font-size: 10px; color: #64748b; margin-top: 1px;">Verify items before checking tamper seal sticker.</div>
+
+            <!-- Sequence Diagram Step: auditBagItems & missing SKU handler -->
+            <div style="background: #f8fafc; border-radius: 8px; padding: 8px; margin: 8px 0; border: 1px solid #e2e8f0; font-size: 11px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0;">
+                <div>
+                  <strong>1x Amul Taaza Milk 500ml</strong>
+                  <div style="font-size: 9px; color: #15803d;">✓ Present & Fresh</div>
+                </div>
+                <span style="font-size: 14px;">✅</span>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 6px;">
+                <div>
+                  <strong>1x Lay's Magic Masala 50g</strong>
+                  <div style="font-size: 9px; color: ${State.order.missingSkuHandled ? '#b91c1c' : '#64748b'};">
+                    ${State.order.missingSkuHandled ? '✕ Missing • ₹20 Refunded to Customer' : 'Counter Stock Checked'}
+                  </div>
+                </div>
+                ${!State.order.missingSkuHandled ? `
+                  <button class="btn-action-secondary" onclick="simulateMissingSKUAudit()" style="width: auto; background: #fee2e2; color: #b91c1c; border-color: #fca5a5; font-size: 9px; padding: 3px 6px;">
+                    Flag Missing Item
+                  </button>
+                ` : `
+                  <span style="font-size: 9px; font-weight: 800; color: #b91c1c;">REFUND TRIGGERED</span>
+                `}
+              </div>
+            </div>
+
+            <!-- Sequence Diagram: confirmTamperSeal -->
+            <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 8px; padding: 8px; margin-bottom: 10px; font-size: 10px;">
+              <div style="font-weight: 700; color: #854d0e;">Tamper Seal Verification:</div>
+              <div style="margin-top: 3px; display: flex; align-items: center; justify-content: space-between;">
+                <span>Physical Seal Serial on Bag:</span>
+                <strong style="color: #ca8a04; font-family: 'JetBrains Mono', monospace;">${State.tamperSealCode}</strong>
+              </div>
+            </div>
+
+            <button class="btn-action-primary rider" onclick="riderConfirmSealAndDepart()">
+              Confirm Seal & Depart Store →
+            </button>
+          </div>
+        `;
+      } else if (State.order.status === 'OUT_FOR_DELIVERY') {
+        jobBox.innerHTML = `
+          <div class="app-card" style="margin: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-tag green">IN TRANSIT</span>
+              <span style="font-weight: 800; color: #ea580c; font-size: 11px;">${State.order.etaMinutes}m remaining</span>
+            </div>
+
+            <div style="font-size: 13px; font-weight: 800;">Delivering to Rahul Verma</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 1px;">Flat 302, Green Valley Apartments</div>
+
+            <div style="background: #0f172a; color: white; border-radius: 10px; padding: 10px; margin: 10px 0;">
+              <div style="font-size: 9px; opacity: 0.7; text-transform: uppercase;">GPS Telemetry Stream</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 11px;">
+                <div>Speed: <strong>24 km/h</strong></div>
+                <div>Battery: <strong>84% EV</strong></div>
+                <div>Corridor: <strong>Ward 4</strong></div>
+              </div>
+            </div>
+
+            <!-- Sequence Diagram Step: Handshake verification -->
+            <div style="background: #fff7ed; border: 1.5px dashed #fdba74; border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+              <div style="font-size: 11px; font-weight: 800; color: #9a3412; margin-bottom: 3px;">Doorstep Cryptographic Handshake</div>
+              ${State.order.isCOD ? `
+                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 6px; margin-bottom: 6px; font-size: 11px; font-weight: 800; color: #991b1b;">
+                  💵 COLLECT CASH ON DELIVERY: ₹${State.order.total} (or Customer QR UPI)
+                </div>
+              ` : `
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 6px; margin-bottom: 6px; font-size: 11px; font-weight: 800; color: #166534;">
+                  🟢 PRE-PAID VIA GOOGLE PAY: ₹0 Due at Doorstep
+                </div>
+              `}
+              <div style="font-size: 10px; color: #7c2d12; margin-bottom: 8px;">Enter 4-digit OTP shown on customer tracking screen:</div>
+              
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="rider-otp-input" placeholder="4-digit OTP" maxlength="4" style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 15px; font-weight: 800; text-align: center; letter-spacing: 0.2em;">
+                <button class="btn-action-primary rider" onclick="riderVerifyOtpAndComplete()" style="width: auto; padding: 8px 14px; font-size: 11px;">
+                  Verify & Handover
+                </button>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                <span style="font-size: 9px; color: #9a3412;">Customer Handshake OTP: <strong>${State.handshakeOTP}</strong></span>
+                <span style="font-size: 9px; color: #ea580c; font-weight: 800; cursor: pointer; text-decoration: underline;" onclick="document.getElementById('rider-otp-input').value = '${State.handshakeOTP}'">Auto-fill OTP</span>
+              </div>
+            </div>
+
+            <button class="btn-action-secondary" onclick="riderArriveAtDoorstep()" style="padding: 7px; font-size: 10px;">
+              Simulate "Arrived at Doorstep"
+            </button>
+          </div>
+        `;
+      } else if (State.order.status === 'DELIVERED') {
+        jobBox.innerHTML = `
+          <div class="app-card" style="border: 1.5px solid #86efac; background: #f0fdf4; text-align: center; padding: 16px 12px; margin: 0;">
+            <div style="font-size: 32px; margin-bottom: 4px;">🎉</div>
+            <div style="font-size: 15px; font-weight: 800; color: #166534;">Trip Completed!</div>
+            <div style="font-size: 11px; color: #15803d; margin-top: 2px;">OTP Handshake Verified • Bag delivered safely</div>
+            
+            <div style="background: white; border-radius: 10px; padding: 10px; margin: 10px 0; border: 1px solid #bbf7d0;">
+              <div style="font-size: 10px; color: #64748b;">Payout Credited to Rajesh Kumar</div>
+              <div style="font-size: 22px; font-weight: 900; color: #059669; margin-top: 2px;">+₹38.00</div>
+              <div style="font-size: 9px; color: #15803d; font-weight: 700; margin-top: 2px;">Instant UPI Settlement</div>
+            </div>
+
+            <button class="btn-action-secondary" onclick="resetWorkflowState()" style="padding: 7px 12px; font-size: 10px;">
+              Restart Live Demo Flow ↻
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    /* ========================================================
+       10. APPLICATION INITIALIZATION & EVENT LISTENERS
+       ======================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Connect Real-Time Search Input
+      const searchIn = document.getElementById('search-input');
+      if (searchIn) {
+        searchIn.addEventListener('input', (e) => handleCustomerSearch(e.target.value));
+        searchIn.addEventListener('keyup', (e) => handleCustomerSearch(e.target.value));
+      }
+
+      // Initial Renders
+      renderCategoryChips();
+      renderStoreCards();
+      renderProductGrid();
+      renderCartItemsList();
+      recalcCartTotals();
+      updateStepperUI();
+      renderCustomerView();
+      renderMerchantView();
+      renderRiderView();
+
+      // Trigger automatic GPS location check
+      setTimeout(() => {
+        requestLiveDeviceGPS();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
